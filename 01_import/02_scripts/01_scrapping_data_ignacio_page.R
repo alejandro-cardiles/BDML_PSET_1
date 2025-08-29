@@ -6,7 +6,7 @@
 
 # setup 
 rm(list = ls())
-pacman::p_load(rio, rvest, tidyverse, jsonlite, httr, data.table)
+pacman::p_load(rio, rvest, tidyverse, data.table)
 
 #=====================#
 # Import
@@ -52,12 +52,12 @@ data = rbindlist(data)
 
 #--- dictionaries
 dict = read_html("https://ignaciomsarmiento.github.io/GEIH2018_sample/dictionary.html") %>% 
-              html_table() %>% 
-              .[[1]]
+       html_table() %>% 
+       .[[1]]
 
 labels = read_html("https://ignaciomsarmiento.github.io/GEIH2018_sample/labels.html") %>% 
-              html_table() %>% 
-              .[[1]]
+         html_table() %>% 
+         .[[1]]
 
 dictionary = list("dictionarie" = dict, 
                    "labels" = labels)
