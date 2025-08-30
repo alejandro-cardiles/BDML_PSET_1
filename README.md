@@ -18,7 +18,7 @@ Este repositorio contiene el flujo completo de trabajo para la resolución del *
 
 ## Descripción de las subcarpetas:
 
--   01_input: contiene los **i**nsumos necesarios para cada tarea (bases de datos, archivos externos, metadatos, etc.).
+-   01_input: contiene los insumos necesarios para cada tarea (bases de datos, archivos externos, metadatos, etc.).
 -   02_scripts: contiene los códigos utilizados en cada etapa del proceso (importación, preparación, análisis, modelado, etc.).
 -   03_output: contiene los resultados generados a partir de la ejecución de los scripts (tablas procesadas, visualizaciones, modelos estimados, reportes, entre otros).
 
@@ -26,35 +26,54 @@ Este repositorio contiene el flujo completo de trabajo para la resolución del *
 
 ## Estructura de Carpetas:
 
+## Estructura de Carpetas
+
 📂 01_import
- ├── 📂 01_input
- ├── 📂 02_scripts
- └── 📂 03_output
+
+├── 📂 01_input
+
+├── 📂 02_scripts
+
+└── 📂 03_output
 
 📂 02_prepare_data
- ├── 📂 01_input
- ├── 📂 02_scripts
- └── 📂 03_output
+
+├── 📂 01_input
+
+├── 📂 02_scripts
+
+└── 📂 03_output
 
 📂 03_stats
- ├── 📂 01_input
- ├── 📂 02_scripts
- └── 📂 03_output
+
+├── 📂 01_input
+
+├── 📂 02_scripts
+
+└── 📂 03_output
 
 📂 04_regressions
- ├── 📂 01_input
- ├── 📂 02_scripts
- └── 📂 03_output
+
+├── 📂 01_input
+
+├── 📂 02_scripts
+
+└── 📂 03_output
 
 📂 05_prediction
- ├── 📂 01_input
- ├── 📂 02_scripts
- └── 📂 03_output
+
+├── 📂 01_input
+
+├── 📂 02_scripts
+
+└── 📂 03_output
 
 📂 06_documentos
- ├── 📂 01_input
- ├── 📂 02_scripts
- └── 📂 03_output
+
+├── 📂 01_input
+
+├── 📂 02_scripts
+
+└── 📂 03_output
 
 📂 99_other
-
