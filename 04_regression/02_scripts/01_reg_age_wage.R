@@ -43,7 +43,7 @@ ci_peak = boot.ci(boot_peak, type = "perc")
 
 #==== visual - graph  ====# 
 plot_data = data.frame(age = seq(min(data$age), max(data$age), 1),
-                        wage = exp(predict(model, newdata = data.frame(age = age_seq)))) #predigo para el vector de edades
+                        wage = exp(predict(model, newdata = data.frame(age = seq(min(data$age), max(data$age), 1))))) #predigo para el vector de edades
 
 peak_point = data.frame(age  = peak_est,
                          wage = exp(predict(model, newdata = data.frame(age = peak_est)))) # prediction for peak age
