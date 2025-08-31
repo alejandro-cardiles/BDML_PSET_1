@@ -48,14 +48,7 @@ plot_data = data.frame(age = seq(min(data$age), max(data$age), 1),
 peak_point = data.frame(age  = peak_est,
                          wage = exp(predict(model, newdata = data.frame(age = peak_est)))) # prediction for peak age
 
-# plot
-plot = ggplot(plot_data, aes(age, wage)) +
-        geom_line(color = "blue", size = 1) +
-        geom_vline(xintercept = peak_point$age, linetype = "dashed", color = "darkgreen") +
-        geom_point(data = peak_point, aes(age, wage), color = "darkgreen", size = 3) +
-        labs(title = "Perfil Edad–Ingresos estimado",
-             x = "Edad", y = "Ingresos predichos") +
-        theme_classic()
-
 #==== export  ====# 
-ggsave(plot, filename = "04_regression/03_output/plot_reg_wage_age.png")
+export(plot_data, "04_regression/03_output/plot_data_reg_wage_age.xlsx")
+export(peak_point, "04_regression/03_output/peak_point_reg_wage_age.xlsx")
+export(model, "04_regression/03_output/model_reg_wage_age.rds")
