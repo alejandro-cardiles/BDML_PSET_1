@@ -46,7 +46,7 @@ household_predictors = df %>%
                                  n_informales_hog = sum(informal,na.rm=T),
                                  n_inactivos_hog = sum(inactivo),
                                  n_children_hog = sum(children),
-                                 n_seniors = sum(seniors)) %>% 
+                                 n_seniors_hog = sum(seniors)) %>% 
                        ungroup()
 
 ##==: 4. Merge covariates together
@@ -64,14 +64,23 @@ data = data %>%
                 y_total_m_ha,
                 f_weights)
 
-##==: 5. Impute missing values
-
-### 5.1 Impute missing covariates values
+##==: 5. Impute missing values of predictors
 data = data %>% 
        mutate(max_educ_level = ifelse(is.na(max_educ_level) == T,yes = data$max_educ_level %>% Mode(na.rm = T) %>% as.numeric(),no = max_educ_level)) 
 
+##==: 6. Impute Dependent variable
 
+### 6.1 Compute descriptive stat to impute missing data with
+impute_dependent_variable = data %>%
+                            drop_na(y_total_m_ha) %>% 
+                            group_by(female,max_educ_level,informal) %>% 
+                            summarise(y_total_m_ha = mean(y_total_m_ha,na.rm = T)) %>% 
+                            ungroup()
+
+### 6.2 Impute missing values of dependent variable
+data = data %>% 
+       rows_patch(x = .,y = impute_dependent_variable,by = c("female","max_educ_level","informal")) 
 
 ##==: 7. Export 
-export(data,'02_prepare_data/03_output/01_main_data.rds')
+export(data,'02_prepare_data/03_output/01_main_data.rds') 
 
