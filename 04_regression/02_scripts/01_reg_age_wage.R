@@ -5,7 +5,7 @@
 
 # setup 
 rm(list = ls())
-pacman::p_load(rio, janitor, stats, tidyverse, data.table, boot, ggplot())
+pacman::p_load(rio, janitor, stats, tidyverse, data.table, boot)
 
 #==== import data ====# 
 data = import("01_import/03_output/01_data_scrapping_web_page.rds") #ajustar para halarlo de preparar data
@@ -19,8 +19,6 @@ r2     = model_sum$r.squared
 r2adj  = model_sum$adj.r.squared
 rmse   = sqrt(mean(residuals(model_sum)^2))
 mae    = mean(abs(residuals(model_sum)))
-aic_v  = AIC(model_sum)
-bic_v  = BIC(model_sum)
 
 #==== function peak age ====# 
 peak.fn = function(data, index) {
