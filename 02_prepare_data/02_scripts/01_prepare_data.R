@@ -7,7 +7,7 @@
 cat("\f")
 rm(list = ls())
 library(pacman)
-p_load(tidyverse,rio,janitor,data.table)
+p_load(tidyverse,rio,janitor,data.table,DescTools,tidymodels)
 
 ##==: 1. Import data
 db = import('01_import/03_output/01_data_scrapping_web_page.rds',
@@ -51,7 +51,7 @@ household_predictors = df %>%
 
 ##==: 4. Merge covariates together
 data = df %>% 
-       filter(ocupado == 1 & age >= 18) %>% 
+       filter(ocupado == 1 & age > 18) %>% 
        left_join(x = .,y = household_predictors,by = c("directorio","secuencia_p")) %>% 
        select(-ocupado,-desocupado,-inactivo,-pet)
   
@@ -64,5 +64,14 @@ data = data %>%
                 y_total_m_ha,
                 f_weights)
 
-##==: 5. Export 
+##==: 5. Impute missing values
+
+### 5.1 Impute missing covariates values
+data = data %>% 
+       mutate(max_educ_level = ifelse(is.na(max_educ_level) == T,yes = data$max_educ_level %>% Mode(na.rm = T) %>% as.numeric(),no = max_educ_level)) 
+
+
+
+##==: 7. Export 
 export(data,'02_prepare_data/03_output/01_main_data.rds')
+
