@@ -8,7 +8,8 @@ rm(list = ls())
 pacman::p_load(rio, janitor, stats, tidyverse, data.table, boot)
 
 #==== import data ====# 
-data = import("01_import/03_output/01_data_scrapping_web_page.rds") #ajustar para halarlo de preparar data
+data = import("02_prepare_data/03_output/01_main_data.rds", #ajustar para halarlo de preparar data
+              setclass = 'tibble') 
 
 #==== run the reg ====# 
 model = lm(log(y_total_m_ha) ~ age + I(age^2), data = data) 
