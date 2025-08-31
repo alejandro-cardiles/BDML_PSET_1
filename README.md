@@ -26,8 +26,6 @@ Este repositorio contiene el flujo completo de trabajo para la resolución del *
 
 ## Estructura de Carpetas:
 
-## Estructura de Carpetas
-
 📂 01_import
 
 ├── 📂 01_input
