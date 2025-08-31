@@ -19,8 +19,8 @@ df = db %>%
      select(directorio,secuencia_p,orden, ### Idenfiticadores únicos de vivienda, hogar y persona
             estrato_energia = estrato1, ### Caracteristica de la vivienda
             sex,age,max_educ_level,relation_to_household_head = p6050, ### Caracteristicas sociales
-            desocupado = dsi,ocupado = ocu,inactivo = inac,pet, ### Estado laboral
-            informal,relab,size_firm,oficio,has_another_job = p7040, ### Caracteristicas laborales
+            ocupado = ocu,inactivo = inac, ### Estado laboral
+            informal,relab,size_firm,oficio,has_another_job = p7040,hours_work_usual, ### Caracteristicas laborales
             y_total_m_ha, ### Variables dependiente ingresos totales mensuales por hora
             f_weights = fex_c) ### Factor de expansión para representar a la poblacion
  
@@ -29,18 +29,17 @@ df = db %>%
 ### 3.1 Individual level predictors
 df = df %>% 
      mutate(
-       female = ifelse(sex == 0,1,0), ### Female indicator
        has_another_job = ifelse(has_another_job == 1,1,0), ### Has another job
        household_head = ifelse(relation_to_household_head == 1,1,0), ### Household head
        household_head_spouse = ifelse(relation_to_household_head == 2,1,0) ### Spouse of household head
       ) %>% 
-      select(-sex,-relation_to_household_head)
+      select(-relation_to_household_head)
 
 ### 3.2 Household level predictors
 household_predictors = df %>% 
                        group_by(directorio,secuencia_p) %>% 
                        mutate(children = ifelse(age < 18,1,0),
-                               seniors = ifelse(age > 65,1,0)) %>% 
+                              seniors = ifelse(age > 65,1,0)) %>% 
                        summarise(household_size = n(),
                                  n_ocupados_hog = sum(ocupado),
                                  n_informales_hog = sum(informal,na.rm=T),
@@ -53,34 +52,102 @@ household_predictors = df %>%
 data = df %>% 
        filter(ocupado == 1 & age > 18) %>% 
        left_join(x = .,y = household_predictors,by = c("directorio","secuencia_p")) %>% 
-       select(-ocupado,-desocupado,-inactivo,-pet)
+       select(-ocupado,-inactivo)
   
-### 4.2 reorder variables
+##==: 5. Impute missing values of covariates
+data = data %>% 
+       mutate(max_educ_level = ifelse(is.na(max_educ_level) == T,yes = data$max_educ_level %>% Mode(na.rm = T) %>% as.numeric(),no = max_educ_level)) 
+
+##==: 6. Relabel covariates
+
+### Educacion
+data = data %>%
+  mutate(max_educ_level = case_when(
+                                    max_educ_level == 1 ~ "None",
+                                    max_educ_level == 2 ~ "Preschool",
+                                    max_educ_level == 3 ~ "Primary incomplete",
+                                    max_educ_level == 4 ~ "Primary complete",
+                                    max_educ_level == 5 ~ "Secondary incomplete",
+                                    max_educ_level == 6 ~ "Secondary complete",
+                                    max_educ_level == 7 ~ "Tertiary",
+                                    max_educ_level == 9 ~ NA,   # Reemplazar 9 por NA
+                                    TRUE ~ NA))
+
+### Sex
+data = data %>% 
+       mutate(sex = ifelse(sex == 0,'Female','Male'),
+              sex = factor(sex,levels = c('Female','Male')),
+              sex = relevel(sex,ref = 'Male'))
+
+### Relab
+data = data %>%
+  mutate(relab = case_when(
+                          relab == 1 ~ "Obrero o empleado de empresa particular",
+                          relab == 2 ~ "Obrero o empleado del gobierno",
+                          relab == 3 ~ "Empleado doméstico",
+                          relab == 4 ~ "Trabajador por cuenta propia",
+                          relab == 5 ~ "Patrón o empleador",
+                          relab == 6 ~ "Trabajador familiar sin remuneración",
+                          relab == 7 ~ "Trabajador sin remuneración en empresas o negocios de otros hogares",
+                          relab == 8 ~ "Jornalero o peón",
+                          relab == 9 ~ "Otro",
+                          TRUE ~ NA_character_))
+
+### Formalidad
+data = data %>% 
+       mutate(formalidad = ifelse(informal == 1,'Informal','Formal'),
+              formalidad = factor(formalidad,levels = c('Informal','Formal')),
+              formalidad = relevel(formalidad,ref = 'Formal')) %>% 
+       select(-informal)
+
+### Size of firm
+data = data %>%
+  mutate(size_firm = case_when(
+                              size_firm == 1 ~ "Self-employed",
+                              size_firm == 2 ~ "2-5 workers",
+                              size_firm == 3 ~ "6-10 workers",
+                              size_firm == 4 ~ "11-50 workers",
+                              size_firm == 5 ~ ">50 workers"))
+
+### Estrato energia
+data = data %>%
+       mutate(estrato_energia = factor(estrato_energia))
+
+### Oficios 
+data = data %>%
+       mutate(oficio = case_when(
+                                  oficio %in% c(1,2,3,4,5,6,7,8,9,11,12) ~ "Profesionales científicos y técnicos",
+                                  oficio %in% c(13,14,15,16,17,19) ~ "Educación, religión y cultura",
+                                  oficio %in% c(18) ~ "Arte, deporte y medios",
+                                  oficio %in% c(20,21,30,31,32,33,34,35,36,37,38,39,40,50,51,60) ~ "Administración y gestión",
+                                  oficio %in% c(41,42,43,44,45,49) ~ "Comercio y ventas",
+                                  oficio %in% c(52,53,54,55,56,57,58,59) ~ "Servicios personales y de seguridad",
+                                  oficio %in% c(61,62,63,64,99) ~ "Agricultura, pesca y oficios rurales",
+                                  oficio %in% c(70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,93,94,95) ~ "Industria y construcción",
+                                  oficio %in% c(88,89,90,91,92) ~ "Textiles y manufactura artesanal",
+                                  oficio %in% c(96,97,98) ~ "Operarios y trabajos no calificados")) 
+
+##==: 7. Impute Dependent variable
+
+### 7.1 Compute descriptive stat to impute missing data with
+impute_dependent_variable = data %>%
+                            drop_na(y_total_m_ha) %>% 
+                            group_by(sex,max_educ_level,formalidad) %>% 
+                            summarise(y_total_m_ha = mean(y_total_m_ha,na.rm = T)) %>% 
+                            ungroup()
+
+### 7.2 Impute missing values of dependent variable
+data = data %>% 
+       rows_patch(x = .,y = impute_dependent_variable,by = c("sex","max_educ_level","formalidad")) 
+
+##==: 8. Reorder covariates
 data = data %>% 
        relocate(directorio,secuencia_p,orden,
-                age,female,max_educ_level,
-                informal,relab,size_firm,oficio,
+                age,sex,max_educ_level,
+                formalidad,relab,size_firm,oficio,hours_work_usual,has_another_job,
                 estrato_energia,starts_with('household'),starts_with('n_'),
                 y_total_m_ha,
                 f_weights)
 
-##==: 5. Impute missing values of predictors
-data = data %>% 
-       mutate(max_educ_level = ifelse(is.na(max_educ_level) == T,yes = data$max_educ_level %>% Mode(na.rm = T) %>% as.numeric(),no = max_educ_level)) 
-
-##==: 6. Impute Dependent variable
-
-### 6.1 Compute descriptive stat to impute missing data with
-impute_dependent_variable = data %>%
-                            drop_na(y_total_m_ha) %>% 
-                            group_by(female,max_educ_level,informal) %>% 
-                            summarise(y_total_m_ha = mean(y_total_m_ha,na.rm = T)) %>% 
-                            ungroup()
-
-### 6.2 Impute missing values of dependent variable
-data = data %>% 
-       rows_patch(x = .,y = impute_dependent_variable,by = c("female","max_educ_level","informal")) 
-
-##==: 7. Export 
+##==: 9. Export 
 export(data,'02_prepare_data/03_output/01_main_data.rds') 
-
