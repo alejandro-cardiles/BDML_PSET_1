@@ -128,7 +128,8 @@ data = data %>%
                                   oficio %in% c(61,62,63,64,99) ~ "Agricultura, pesca y oficios rurales",
                                   oficio %in% c(70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,93,94,95) ~ "Industria y construcción",
                                   oficio %in% c(88,89,90,91,92) ~ "Textiles y manufactura artesanal",
-                                  oficio %in% c(96,97,98) ~ "Operarios y trabajos no calificados")) 
+                                  oficio %in% c(96,97,98) ~ "Operarios y trabajos no calificados"),
+              oficio = factor(oficio)) 
 
 ##==: 7. Impute Dependent variable
 
