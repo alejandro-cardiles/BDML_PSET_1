@@ -62,16 +62,17 @@ data = data %>%
 
 ### Educacion
 data = data %>%
-  mutate(max_educ_level = case_when(
-                                    max_educ_level == 1 ~ "None",
-                                    max_educ_level == 2 ~ "Preschool",
-                                    max_educ_level == 3 ~ "Primary incomplete",
-                                    max_educ_level == 4 ~ "Primary complete",
-                                    max_educ_level == 5 ~ "Secondary incomplete",
-                                    max_educ_level == 6 ~ "Secondary complete",
-                                    max_educ_level == 7 ~ "Tertiary",
-                                    max_educ_level == 9 ~ NA,   # Reemplazar 9 por NA
-                                    TRUE ~ NA))
+       mutate(max_educ_level = case_when(
+                                          max_educ_level == 1 ~ "None",
+                                          max_educ_level == 2 ~ "Preschool",
+                                          max_educ_level == 3 ~ "Primary incomplete",
+                                          max_educ_level == 4 ~ "Primary complete",
+                                          max_educ_level == 5 ~ "Secondary incomplete",
+                                          max_educ_level == 6 ~ "Secondary complete",
+                                          max_educ_level == 7 ~ "Tertiary",
+                                          max_educ_level == 9 ~ NA,   # Reemplazar 9 por NA
+                                          TRUE ~ NA),
+              max_educ_level = as.factor(max_educ_level))
 
 ### Sex
 data = data %>% 
@@ -81,17 +82,18 @@ data = data %>%
 
 ### Relab
 data = data %>%
-  mutate(relab = case_when(
-                          relab == 1 ~ "Obrero o empleado de empresa particular",
-                          relab == 2 ~ "Obrero o empleado del gobierno",
-                          relab == 3 ~ "Empleado doméstico",
-                          relab == 4 ~ "Trabajador por cuenta propia",
-                          relab == 5 ~ "Patrón o empleador",
-                          relab == 6 ~ "Trabajador familiar sin remuneración",
-                          relab == 7 ~ "Trabajador sin remuneración en empresas o negocios de otros hogares",
-                          relab == 8 ~ "Jornalero o peón",
-                          relab == 9 ~ "Otro",
-                          TRUE ~ NA_character_))
+       mutate(relab = case_when(
+                            relab == 1 ~ "Obrero o empleado de empresa particular",
+                            relab == 2 ~ "Obrero o empleado del gobierno",
+                            relab == 3 ~ "Empleado doméstico",
+                            relab == 4 ~ "Trabajador por cuenta propia",
+                            relab == 5 ~ "Patrón o empleador",
+                            relab == 6 ~ "Trabajador familiar sin remuneración",
+                            relab == 7 ~ "Trabajador sin remuneración en empresas o negocios de otros hogares",
+                            relab == 8 ~ "Jornalero o peón",
+                            relab == 9 ~ "Otro",
+                            TRUE ~ NA),
+              relab = as.factor(relab))
 
 ### Formalidad
 data = data %>% 
@@ -107,7 +109,8 @@ data = data %>%
                               size_firm == 2 ~ "2-5 workers",
                               size_firm == 3 ~ "6-10 workers",
                               size_firm == 4 ~ "11-50 workers",
-                              size_firm == 5 ~ ">50 workers"))
+                              size_firm == 5 ~ ">50 workers"),
+         size_firm = as.factor(size_firm))
 
 ### Estrato energia
 data = data %>%
