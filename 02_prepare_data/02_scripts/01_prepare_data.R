@@ -7,7 +7,7 @@
 cat("\f")
 rm(list = ls())
 library(pacman)
-p_load(tidyverse,rio,janitor,data.table,DescTools,tidymodels)
+p_load(tidyverse,rio,janitor,data.table,DescTools)
 
 ##==: 1. Import data
 db = import('01_import/03_output/01_data_scrapping_web_page.rds',
