@@ -24,7 +24,7 @@ table_continuous = df %>%
                           'N. Niños en el hogar' = n_children_hog,
                           'N. Adultos Mayores en el hogar' = n_seniors_hog)
 
-### 2.2 Define descriptive statistics
+### Define descriptive statistics
  Correlation = function(x){
                             correlation_test_result = cor.test(df$y_total_m_ha,x, method = "pearson")
                             
@@ -41,32 +41,29 @@ table_continuous = df %>%
 
 P25 = function(x) quantile(x,probs = 0.25)
 
-P75 = function(x) quantile(x,probs = 0.25)
+P75 = function(x) quantile(x,probs = 0.75)
 
-### 2.3 Compute stats for table
+### Compute stats for table
 table_continuous = datasummary(formula = All(table_continuous) ~ Mean + SD + Min + P25 + Median + P75 + Max +  Correlation,
                                data = table_continuous,
                                add_columns = tibble(role = c(rep('Predictores continuos',8),'Resultado')),
-                               output = 'data.frame',fmt = 2) %>%
+                               output = 'data.frame',fmt = function(x) format(round(x,2),big.mark = ',')) %>%
                                arrange(desc(role))
-
-### 2.4 Correct values
+### Rename stats
 table_continuous = table_continuous %>% 
-  mutate(across(where(is.numeric),.fns = function(x) format(x,big.mark = ',',dec.mark = '.')))
+                   rename('Promedio' = "Mean",
+                          'Desviación Estándar' = "SD",
+                          'Mediana' = "Median",
+                          'Correlación con la variable de resultado' = 'Correlation')
 
-### 2.4 Rename stats
-table_continuous %>% 
-  rename('Promedio' = "Mean",
-         'Desviación Estándar' = "SD",
-         'Mediana' = "Median",
-         'Correlación con la variable de resultado' = 'Correlation') %>% 
-            gt(groupname_col = 'role',
-              row_group_as_column = F,
-              auto_align = T,
-              process_md = T)  %>%
-            tab_style(
-              style = list(cell_text(weight = "bold")),
-              locations = cells_row_groups())
+### Make table
+table_continuous = table_continuous %>% 
+                   gt(groupname_col = 'role',
+                      row_group_as_column = F,
+                      auto_align = T,
+                      process_md = T)  %>%
+                   tab_style(style = list(cell_text(weight = "bold")),
+                             locations = cells_row_groups())
   
 ### 2.2 Categorical variables
 
@@ -132,3 +129,8 @@ table_categorical = table_categorical %>%
                     tab_style(
                       style = list(cell_text(weight = "bold")),
                       locations = cells_row_groups())
+
+##==: 3. Export tables
+table_continuous %>% as_latex() %>% write_lines(x = .,file = '06_visual/output/01_tabla_continuas.tex')
+table_categorical %>% as_latex() %>% write_lines(x = .,file = '06_visual/output/01_tabla_categoricas.tex')
+
