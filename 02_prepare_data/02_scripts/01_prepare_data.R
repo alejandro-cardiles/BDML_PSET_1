@@ -29,10 +29,17 @@ df = db %>%
 ### 3.1 Individual level predictors
 df = df %>% 
      mutate(
-       has_another_job = ifelse(has_another_job == 1,1,0), ### Has another job
-       household_head = ifelse(relation_to_household_head == 1,1,0), ### Household head
-       household_head_spouse = ifelse(relation_to_household_head == 2,1,0) ### Spouse of household head
-      ) %>% 
+       has_another_job = ifelse(has_another_job == 1,'Yes','No'), ### Has another job
+       household_head = ifelse(relation_to_household_head == 1,'Yes','No'), ### Household head
+       household_head_spouse = ifelse(relation_to_household_head == 2,'Yes','No'), ### Spouse of household head
+       
+       has_another_job = factor(has_another_job),
+       household_head = factor(household_head),
+       household_head_spouse = factor(household_head_spouse),
+
+       has_another_job = relevel(has_another_job,ref = 'No'),
+       household_head = relevel(household_head,ref = 'No'),
+       household_head_spouse = relevel(household_head_spouse,ref = 'No')) %>% 
       select(-relation_to_household_head)
 
 ### 3.2 Household level predictors
