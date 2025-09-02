@@ -29,9 +29,9 @@ df = db %>%
 ### 3.1 Individual level predictors
 df = df %>% 
      mutate(
-       has_another_job = ifelse(has_another_job == 1,'Yes','No'), ### Has another job
-       household_head = ifelse(relation_to_household_head == 1,'Yes','No'), ### Household head
-       household_head_spouse = ifelse(relation_to_household_head == 2,'Yes','No'), ### Spouse of household head
+       has_another_job = ifelse(has_another_job == 1,'Si','No'), ### Has another job
+       household_head = ifelse(relation_to_household_head == 1,'Si','No'), ### Household head
+       household_head_spouse = ifelse(relation_to_household_head == 2,'Si','No'), ### Spouse of household head
        
        has_another_job = factor(has_another_job),
        household_head = factor(household_head),
@@ -70,22 +70,22 @@ data = data %>%
 ### Educacion
 data = data %>%
        mutate(max_educ_level = case_when(
-                                          max_educ_level == 1 ~ "None",
-                                          max_educ_level == 2 ~ "Preschool",
-                                          max_educ_level == 3 ~ "Primary incomplete",
-                                          max_educ_level == 4 ~ "Primary complete",
-                                          max_educ_level == 5 ~ "Secondary incomplete",
-                                          max_educ_level == 6 ~ "Secondary complete",
-                                          max_educ_level == 7 ~ "Tertiary",
+                                          max_educ_level == 1 ~ "Ninguno",
+                                          max_educ_level == 2 ~ "Preescolar",
+                                          max_educ_level == 3 ~ "Primaria incompleta",
+                                          max_educ_level == 4 ~ "Primaria completa",
+                                          max_educ_level == 5 ~ "Secundaria incompleta",
+                                          max_educ_level == 6 ~ "Secundaria completa",
+                                          max_educ_level == 7 ~ "Terciaria",
                                           max_educ_level == 9 ~ NA,   # Reemplazar 9 por NA
                                           TRUE ~ NA),
               max_educ_level = as.factor(max_educ_level))
 
 ### Sex
 data = data %>% 
-       mutate(sex = ifelse(sex == 0,'Female','Male'),
-              sex = factor(sex,levels = c('Female','Male')),
-              sex = relevel(sex,ref = 'Male'))
+       mutate(sex = ifelse(sex == 0,'Femenino','Masculino'),
+              sex = factor(sex,levels = c('Femenino','Masculino')),
+              sex = relevel(sex,ref = 'Masculino'))
 
 ### Relab
 data = data %>%
@@ -112,12 +112,15 @@ data = data %>%
 ### Size of firm
 data = data %>%
   mutate(size_firm = case_when(
-                              size_firm == 1 ~ "Self-employed",
-                              size_firm == 2 ~ "2-5 workers",
-                              size_firm == 3 ~ "6-10 workers",
-                              size_firm == 4 ~ "11-50 workers",
-                              size_firm == 5 ~ ">50 workers"),
-         size_firm = as.factor(size_firm))
+                              size_firm == 1 ~ "Independiente",
+                              size_firm == 2 ~ "2-5 trabajadores",
+                              size_firm == 3 ~ "6-10 trabajadores",
+                              size_firm == 4 ~ "11-50 trabajadores",
+                              size_firm == 5 ~ ">50 trabajadores"),
+                              
+         size_firm = factor(size_firm,levels = c("Independiente","2-5 trabajadores",
+                                                 "6-10 trabajadores","11-50 trabajadores",
+                                                  ">50 trabajadores")))
 
 ### Estrato energia
 data = data %>%
