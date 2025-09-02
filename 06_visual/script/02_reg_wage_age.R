@@ -5,7 +5,7 @@
 
 # setup 
 rm(list = ls())
-pacman::p_load(rio, tidyverse)
+pacman::p_load(rio, tidyverse, fixest)
 
 #==== import data ====# 
 
@@ -20,9 +20,7 @@ peak_point = import("04_regression/03_output/peak_point_reg_wage_age.xlsx")
 
 #table
 
-
-
-
+etable(model, file="06_visual/output/02_model_wage_age.tex")
 
 # plot
 plot = ggplot(plot_data, aes(age, wage)) +
@@ -34,4 +32,4 @@ plot = ggplot(plot_data, aes(age, wage)) +
         theme_classic()
 
 #==== export  ====# 
-ggsave(plot, filename = "06_visual/output/plot_reg_wage_age.png")
+ggsave(plot, filename = "06_visual/output/02_plot_reg_wage_age.png")

@@ -5,14 +5,14 @@
 
 # setup 
 rm(list = ls())
-pacman::p_load(rio, janitor, stats, tidyverse, data.table, boot)
+pacman::p_load(rio, janitor, stats, tidyverse, data.table, boot, fixest)
 
 #==== import data ====# 
 data = import("02_prepare_data/03_output/01_main_data.rds", #ajustar para halarlo de preparar data
               setclass = 'tibble') 
 
 #==== run the reg ====# 
-model = lm(log(y_total_m_ha) ~ age + I(age^2), data = data) 
+model = feols(log(y_total_m_ha) ~ age + I(age^2), data = data) 
 model_sum = summary(model)
 
 #==== in sample fit (metric) ====# 
