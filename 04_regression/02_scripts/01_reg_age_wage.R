@@ -13,13 +13,10 @@ data = import("02_prepare_data/03_output/01_main_data.rds", #ajustar para halarl
 
 #==== run the reg ====# 
 model = feols(log(y_total_m_ha) ~ age + I(age^2), data = data) 
-model_sum = summary(model)
+
 
 #==== in sample fit (metric) ====# 
-r2     = model_sum$r.squared
-r2adj  = model_sum$adj.r.squared
-rmse   = sqrt(mean(residuals(model_sum)^2))
-mae    = mean(abs(residuals(model_sum)))
+model_sum = summary(model)
 
 #==== function peak age ====# 
 peak.fn = function(data, index) {
