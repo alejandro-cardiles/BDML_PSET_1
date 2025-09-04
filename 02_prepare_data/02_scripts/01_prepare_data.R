@@ -141,18 +141,9 @@ data = data %>%
                                   oficio %in% c(96,97,98) ~ "Operarios y trabajos no calificados"),
               oficio = factor(oficio)) 
 
-##==: 7. Impute Dependent variable
-
-### 7.1 Compute descriptive stat to impute missing data with
-impute_dependent_variable = data %>%
-                            drop_na(y_total_m_ha) %>% 
-                            group_by(sex,max_educ_level,formalidad) %>% 
-                            summarise(y_total_m_ha = mean(y_total_m_ha,na.rm = T)) %>% 
-                            ungroup()
-
-### 7.2 Impute missing values of dependent variable
+##==: 7. Remove NA from outcome variable
 data = data %>% 
-       rows_patch(x = .,y = impute_dependent_variable,by = c("sex","max_educ_level","formalidad")) 
+       drop_na(y_total_m_ha)
 
 ##==: 8. Reorder covariates
 data = data %>% 
