@@ -66,7 +66,7 @@ Este repositorio contiene el flujo completo de trabajo para la resolución del *
 
 └── 📂 03_output
 
-📂 06_documentos
+📂 06_visual
 
 ├── 📂 01_input
 
