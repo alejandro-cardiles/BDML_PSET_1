@@ -38,9 +38,14 @@ df = df %>% mutate(sex = as.numeric(sex),
 # ==== 3. FWL model regression ====
 #-----------------------------------#
 
-model2 = lm(log(y_total_m_ha) ~ sex + age + I(age^2) + max_educ_level + oficio + formalidad, data = df) 
+model2 = lm(log(y_total_m_ha) ~ sex + age + I(age^2) + max_educ_level + oficio + relab + size_firm + formalidad, data = df) 
 model2_sum = summary(model2)
 model2_sum
+
+model3 = lm(log(y_total_m_ha) ~ sex + age + I(age^2) + max_educ_level + oficio + relab + size_firm, data = df) 
+model3_sum = summary(model3)
+model3_sum
+
 
 # age, maxeduclevel informal
 
