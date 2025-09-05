@@ -15,14 +15,7 @@ df = import('02_prepare_data/03_output/01_main_data.rds',setclass = 'tibble') %>
 table_continuous = df %>% 
                    select(where(is.numeric)) %>% 
                    rename('Ingresos laborales por hora' = y_total_m_ha,
-                          'Edad' = age,
-                          'Jornada Laboral' = hours_work_usual,
-                          'Tamaño del hogar' = household_size,
-                          'N. Ocupados en el hogar' = n_ocupados_hog,
-                          'N. Informales en el hogar' = n_informales_hog,
-                          'N. Inactivos en el hogar' = n_inactivos_hog,
-                          'N. Niños en el hogar' = n_children_hog,
-                          'N. Adultos Mayores en el hogar' = n_seniors_hog)
+                          'Edad' = age)
 
 ### Define descriptive statistics
  Correlation = function(x){
@@ -31,10 +24,10 @@ table_continuous = df %>%
                             estimate = correlation_test_result$estimate %>% round(.,3)
                             p_value = correlation_test_result$p.value
 
-                            estimate = fcase(p_value <= 0.1,paste0(estimate,'*'),
-                                            p_value <= 0.05,paste0(estimate,'**'),
-                                            p_value <= 0.01,paste0(estimate,'***'),
-                                            default = as.character(estimate))
+                            estimate = fcase(p_value <= 0.01, paste0(estimate, '***'),
+                                             p_value <= 0.05, paste0(estimate, '**'),
+                                             p_value <= 0.1,  paste0(estimate, '*'),
+                                             default = as.character(estimate))
                             
                             return(estimate)                        
                             }
@@ -46,15 +39,15 @@ P75 = function(x) quantile(x,probs = 0.75)
 ### Compute stats for table
 table_continuous = datasummary(formula = All(table_continuous) ~ Mean + SD + Min + P25 + Median + P75 + Max +  Correlation,
                                data = table_continuous,
-                               add_columns = tibble(role = c(rep('Predictores continuos',8),'Resultado')),
                                output = 'data.frame',fmt = function(x) format(round(x,2),big.mark = ',')) %>%
-                               arrange(desc(role))
+                               arrange(desc(Mean))
+
 ### Rename stats
 table_continuous = table_continuous %>% 
                    rename('Promedio' = "Mean",
-                          'Desviación Estándar' = "SD",
+                          'Desviación \nestándar' = "SD",
                           'Mediana' = "Median",
-                          'Correlación con la variable de resultado' = 'Correlation')
+                          'Correlación con \n variable de resultado' = 'Correlation')
 
 ### Make table
 table_continuous = table_continuous %>% 
@@ -103,12 +96,8 @@ table_categorical = table_categorical %>%
                                             group == 'max_educ_level' ~ 'Máximo nivel educativo',
                                             group == 'formalidad' ~ 'Formalidad',
                                             group == 'relab' ~ 'Posición ocupacional',
-                                            group == 'size_firm' ~ 'Cantidad de trabajadores de la empresa en que trabaja',
+                                            group == 'size_firm' ~ 'Cantidad de trabajadores \nde la empresa en que trabaja',
                                             group == 'oficio' ~ 'Oficio',
-                                            group == 'has_another_job' ~ '¿Tiene más de un empleo?',
-                                            group == 'estrato_energia' ~ 'Estrato de energía eléctrica',
-                                            group == 'household_head' ~ '¿Es jefe/a de hogar?',
-                                            group == 'household_head_spouse' ~ '¿Es cónyuge del jefe/a del hogar?',
                                             .default = group))
 
 ### Rename variables
@@ -116,21 +105,19 @@ table_categorical = table_categorical %>%
                     rename(' ' = var,
                             'N' = n,
                             '%' = prop,
-                            'Promedio de ingresos laborales por hora' = average,
-                            'Desviación estándar de los ingresos laborales por hora' = sd,
-                            'Mediana de los ingresos laborales por hora' = median)
+                            'Promedio' = average,
+                            'Desviación \nestándar' = sd,
+                            'Mediana' = median)
 
 ### Make descriptive table
 table_categorical = table_categorical %>% 
                     gt(groupname_col = 'group',
-                      row_group_as_column = F,
-                      auto_align = T,
-                      process_md = T)  %>%
-                    tab_style(
-                      style = list(cell_text(weight = "bold")),
-                      locations = cells_row_groups())
+                       row_group_as_column = F,
+                       auto_align = T,
+                       process_md = T)  
 
 ##==: 3. Export tables
+
 table_continuous %>% as_latex() %>% write_lines(x = .,file = '06_visual/output/01_tabla_continuas.tex')
 table_categorical %>% as_latex() %>% write_lines(x = .,file = '06_visual/output/01_tabla_categoricas.tex')
 

@@ -15,54 +15,24 @@ db = import('01_import/03_output/01_data_scrapping_web_page.rds',
      clean_names() 
 
 ##==: 2. Select covariates
-df = db %>% 
+db = db %>% 
      select(directorio,secuencia_p,orden, ### Idenfiticadores únicos de vivienda, hogar y persona
-            estrato_energia = estrato1, ### Caracteristica de la vivienda
-            sex,age,max_educ_level,relation_to_household_head = p6050, ### Caracteristicas sociales
-            ocupado = ocu,inactivo = inac, ### Estado laboral
+            sex,age,max_educ_level, ### Caracteristicas sociales
+            ocupado = ocu, ### Indicador de ocupación laboral
             informal,relab,size_firm,oficio, ### Caracteristicas laborales
             y_total_m_ha, ### Variables dependiente ingresos totales mensuales por hora
             f_weights = fex_c) ### Factor de expansión para representar a la poblacion
  
-##==: 3. Wrangle predictors
-
-### 3.1 Individual level predictors
-df = df %>% 
-     mutate(
-       household_head = ifelse(relation_to_household_head == 1,'Si','No'), ### Household head
-       household_head_spouse = ifelse(relation_to_household_head == 2,'Si','No'), ### Spouse of household head
-       
-       household_head = factor(household_head),
-       household_head_spouse = factor(household_head_spouse),
-
-       household_head = relevel(household_head,ref = 'No'),
-       household_head_spouse = relevel(household_head_spouse,ref = 'No')) %>% 
-      select(-relation_to_household_head)
-
-### 3.2 Household level predictors
-household_predictors = df %>% 
-                       group_by(directorio,secuencia_p) %>% 
-                       mutate(children = ifelse(age < 18,1,0),
-                              seniors = ifelse(age > 65,1,0)) %>% 
-                       summarise(household_size = n(),
-                                 n_ocupados_hog = sum(ocupado),
-                                 n_informales_hog = sum(informal,na.rm=T),
-                                 n_inactivos_hog = sum(inactivo),
-                                 n_children_hog = sum(children),
-                                 n_seniors_hog = sum(seniors)) %>% 
-                       ungroup()
-
-##==: 4. Merge covariates together
-data = df %>% 
+##==: 3. Subset dataset
+data = db %>% 
        filter(ocupado == 1 & age > 18) %>% 
-       left_join(x = .,y = household_predictors,by = c("directorio","secuencia_p")) %>% 
-       select(-ocupado,-inactivo)
+       select(-ocupado)
   
-##==: 5. Impute missing values of covariates
+##==: 4. Impute missing values of covariates
 data = data %>% 
        mutate(max_educ_level = ifelse(is.na(max_educ_level) == T,yes = data$max_educ_level %>% Mode(na.rm = T) %>% as.numeric(),no = max_educ_level)) 
 
-##==: 6. Relabel covariates
+##==: 5. Relabel covariates
 
 ### Educacion
 data = data %>%
@@ -119,10 +89,6 @@ data = data %>%
                                                  "6-10 trabajadores","11-50 trabajadores",
                                                   ">50 trabajadores")))
 
-### Estrato energia
-data = data %>%
-       mutate(estrato_energia = factor(estrato_energia))
-
 ### Oficios 
 data = data %>%
        mutate(oficio = case_when(
@@ -138,22 +104,21 @@ data = data %>%
                                   oficio %in% c(96,97,98) ~ "Operarios y trabajos no calificados"),
               oficio = factor(oficio)) 
 
-##==: 7. Remove NA from outcome variable
+##==: 6. Remove NA from outcome variable
 data = data %>% 
        drop_na(y_total_m_ha)
 
-##==: 8. Remove workers who by definition do not recieve any labor income
+##==: 7. Remove workers who by definition do not recieve any labor income
 data = data %>% 
        filter(!relab %in% c("Trabajador familiar sin remuneración","Trabajador sin remuneración en empresas o negocios de otros hogares"))
 
-##==: 9. Reorder covariates
+##==: 8. Reorder covariates
 data = data %>% 
        relocate(directorio,secuencia_p,orden,
                 age,sex,max_educ_level,
                 formalidad,relab,size_firm,oficio,
-                estrato_energia,starts_with('household'),starts_with('n_'),
                 y_total_m_ha,
                 f_weights)
 
-##==: 10. Export 
+##==: 9. Export 
 export(data,'02_prepare_data/03_output/01_main_data.rds') 
