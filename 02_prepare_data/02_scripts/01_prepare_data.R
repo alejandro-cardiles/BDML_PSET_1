@@ -20,7 +20,7 @@ df = db %>%
             estrato_energia = estrato1, ### Caracteristica de la vivienda
             sex,age,max_educ_level,relation_to_household_head = p6050, ### Caracteristicas sociales
             ocupado = ocu,inactivo = inac, ### Estado laboral
-            informal,relab,size_firm,oficio,has_another_job = p7040,hours_work_usual, ### Caracteristicas laborales
+            informal,relab,size_firm,oficio, ### Caracteristicas laborales
             y_total_m_ha, ### Variables dependiente ingresos totales mensuales por hora
             f_weights = fex_c) ### Factor de expansión para representar a la poblacion
  
@@ -29,15 +29,12 @@ df = db %>%
 ### 3.1 Individual level predictors
 df = df %>% 
      mutate(
-       has_another_job = ifelse(has_another_job == 1,'Si','No'), ### Has another job
        household_head = ifelse(relation_to_household_head == 1,'Si','No'), ### Household head
        household_head_spouse = ifelse(relation_to_household_head == 2,'Si','No'), ### Spouse of household head
        
-       has_another_job = factor(has_another_job),
        household_head = factor(household_head),
        household_head_spouse = factor(household_head_spouse),
 
-       has_another_job = relevel(has_another_job,ref = 'No'),
        household_head = relevel(household_head,ref = 'No'),
        household_head_spouse = relevel(household_head_spouse,ref = 'No')) %>% 
       select(-relation_to_household_head)
@@ -145,14 +142,18 @@ data = data %>%
 data = data %>% 
        drop_na(y_total_m_ha)
 
-##==: 8. Reorder covariates
+##==: 8. Remove workers who by definition do not recieve any labor income
+data = data %>% 
+       filter(!relab %in% c("Trabajador familiar sin remuneración","Trabajador sin remuneración en empresas o negocios de otros hogares"))
+
+##==: 9. Reorder covariates
 data = data %>% 
        relocate(directorio,secuencia_p,orden,
                 age,sex,max_educ_level,
-                formalidad,relab,size_firm,oficio,hours_work_usual,has_another_job,
+                formalidad,relab,size_firm,oficio,
                 estrato_energia,starts_with('household'),starts_with('n_'),
                 y_total_m_ha,
                 f_weights)
 
-##==: 9. Export 
+##==: 10. Export 
 export(data,'02_prepare_data/03_output/01_main_data.rds') 
