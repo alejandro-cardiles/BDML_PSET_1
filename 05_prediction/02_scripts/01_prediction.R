@@ -1,6 +1,6 @@
 #------------------------#
-# Angel Castillo Negrete #
-#     2025-08-31         #
+# Alejandro Cardiles 
+# 2025-09-05      
 #------------------------#
 
 ### setup
@@ -22,64 +22,58 @@ train = training(split)
 test = testing(split)
 
 ##==: 3. get metrics for previus models 
-model1 = feglm(log(y_total_m_ha) ~ age + I(age^2), data = train ) 
-model2 = lm(log(y_total_m_ha) ~ sex, data = train %>% mutate(sex = as.numeric(sex), max_educ_level = as.factor(max_educ_level))) 
-model3 = lm(log(y_total_m_ha) ~ sex + age + I(age^2) + max_educ_level + oficio + relab + size_firm, data = train %>% mutate(sex = as.numeric(sex), max_educ_level = as.factor(max_educ_level))) 
-model4 = lm(log(y_total_m_ha) ~ sex + age + I(age^2) + max_educ_level + oficio + relab + size_firm + formalidad, data = train %>% mutate(sex = as.numeric(sex), max_educ_level = as.factor(max_educ_level))) 
+M1 = lm(log(y_total_m_ha) ~ age + I(age^2), data = train ) 
+M2 = lm(log(y_total_m_ha) ~ sex, data = train %>% mutate(sex = as.numeric(sex), max_educ_level = as.factor(max_educ_level))) 
+M3 = lm(log(y_total_m_ha) ~ sex + age + I(age^2) + max_educ_level + oficio + relab + size_firm, data = train %>% mutate(sex = as.numeric(sex), max_educ_level = as.factor(max_educ_level))) 
+M4 = lm(log(y_total_m_ha) ~ sex + age + I(age^2) + max_educ_level + oficio + relab + size_firm + formalidad, data = train %>% mutate(sex = as.numeric(sex), max_educ_level = as.factor(max_educ_level))) 
 
 
-model1_prediction = predict(model1, newdata = test) 
-model2_prediction = predict(model2, newdata = test %>% mutate(sex = as.numeric(sex), max_educ_level = as.factor(max_educ_level))) 
-model3_prediction = predict(model3, newdata = test %>% mutate(sex = as.numeric(sex), max_educ_level = as.factor(max_educ_level))) 
-model4_prediction = predict(model4, newdata = test %>% mutate(sex = as.numeric(sex), max_educ_level = as.factor(max_educ_level))) 
+M1_prediction = predict(M1, newdata = test) 
+M2_prediction = predict(M2, newdata = test %>% mutate(sex = as.numeric(sex), max_educ_level = as.factor(max_educ_level))) 
+M3_prediction = predict(M3, newdata = test %>% mutate(sex = as.numeric(sex), max_educ_level = as.factor(max_educ_level))) 
+M4_prediction = predict(M4, newdata = test %>% mutate(sex = as.numeric(sex), max_educ_level = as.factor(max_educ_level))) 
 
 
 ##==: 4. Create new models
-# M5
-model5 = lm(log(y_total_m_ha) ~ sex + poly(age, 3) + max_educ_level + oficio + relab + size_firm + formalidad,
-            data = train)
+formulas = list(
+  M6 = log(y_total_m_ha) ~ sex + poly(age, 3) + max_educ_level + oficio + relab + size_firm + formalidad,
+  M7 = log(y_total_m_ha) ~ sex + poly(age, 2) + max_educ_level * formalidad + oficio + relab + size_firm,
+  M8 = log(y_total_m_ha) ~ sex + poly(age, 2) + max_educ_level + oficio + relab*size_firm + formalidad,
+  M9 = log(y_total_m_ha) ~ sex + poly(age, 2) + oficio + formalidad + max_educ_level*formalidad + relab*size_firm,
+  M10 = log(y_total_m_ha) ~ sex + poly(age, 2) + oficio + formalidad + max_educ_level*formalidad*age + relab*size_firm*age
+)
 
-# M6
-model6 = lm(log(y_total_m_ha) ~ sex + poly(age, 2) + max_educ_level * formalidad + oficio + relab + size_firm,
-            data = train)
+# entrenar modelos
+models = lapply(formulas, function(f) lm(f, data = train))
+models = list(M1, M2, M3, M4, models$M6, models$M7, models$M8, models$M9, models$M10)
 
-# M7
-model7 = lm(log(y_total_m_ha) ~ sex + poly(age, 2) + max_educ_level + oficio + relab*size_firm + formalidad,
-            data = train)
+# predicciones
+preds = lapply(models[-c(1:4)], function(m) predict(m, newdata = test))
+preds = list(M1_prediction, M2_prediction, M3_prediction, M4_prediction, preds[[1]], preds[[2]], preds[[3]], preds[[4]], preds[[5]])
 
-# M8
-model8 = lm(log(y_total_m_ha) ~ sex + poly(age, 2) + oficio + formalidad + max_educ_level * formalidad + relab*size_firm,
-            data = train)
-
-# M9
-model9 = lm(log(y_total_m_ha) ~  sex + poly(age, 2) + oficio + formalidad + max_educ_level*formalidad*age + relab*size_firm*age  ,
-            data = train)
-
-
-# predictions
-model5_pred = predict(model5, newdata = test)
-model6_pred = predict(model6, newdata = test)
-model7_pred = predict(model7, newdata = test)
-model8_pred = predict(model8, newdata = test)
-model9_pred = predict(model9, newdata = test)
-
+rm(M1, M2, M3, M4)
+rm(M1_prediction, M2_prediction, M3_prediction, M4_prediction)
+rm(split, formulas)
 
 ##==: 5. extact metrics for new models
-output = lapply(X = list(model1_prediction, model2_prediction, model3_prediction, model4_prediction, model5_pred, model6_pred, model7_pred, model8_pred, model9_pred), FUN = function(x) {
+output = lapply(X = 1:length(preds), FUN = function(x) {
 
-  print(1)
-  output = metrics(tibble(pred = x, 
-                          truth = log(test$y_total_m_ha)), 
-                          truth = truth, 
-                          estimate  = pred
-                          )
+  pred_vs_truth = tibble(prediction = preds[[x]], 
+                         truth = log(test$y_total_m_ha),  
+                         mse = (truth-prediction)^2)
   
-  output = output |> 
-           filter(.metric %in% c("rmse"))
+  metirc = metrics(pred_vs_truth, 
+                   truth = truth, 
+                   estimate  = prediction) |> 
+           mutate(model_parameters = length(models[[x]]$coefficients))
 
+  output = list(metric = metirc,
+                result = pred_vs_truth)
   return(output)
 
 }) 
 
-output = bind_rows(output)
-print(output)
+#=====================#
+# 6. Export results   #
+#=====================#
+export(output, "05_prediction/03_output/01_test_metrics.rds")
