@@ -45,9 +45,9 @@ table_continuous = datasummary(formula = All(table_continuous) ~ Mean + SD + Min
 ### Rename stats
 table_continuous = table_continuous %>% 
                    rename('Promedio' = "Mean",
-                          'Desviación \nestándar' = "SD",
+                          'SD' = "SD",
                           'Mediana' = "Median",
-                          'Correlación con \n variable de resultado' = 'Correlation')
+                          'Correlación' = 'Correlation')
 
 ### Make table
 table_continuous = table_continuous %>% 
@@ -81,14 +81,14 @@ table_categorical = map(.x = vars_factores,.f = function(x){
                                       select(var = any_of(x),y_total_m_ha) %>% 
                                       group_by(var) %>% 
                                       summarise(average = mean(y_total_m_ha),
-                                                sd = sd(y_total_m_ha),
-                                                median = median(y_total_m_ha)) %>% 
-                                      mutate(across(c(average,sd,median),.fns = function(x) round(x,0)),
-                                             across(c(average,sd,median),.fns = function(x) format(x,big.mark = ',')))
+                                                sd = sd(y_total_m_ha)) %>% 
+                                      mutate(across(c(average,sd),.fns = function(x) round(x,0)),
+                                             across(c(average,sd),.fns = function(x) format(x,big.mark = ',')))
 
                         df_stats = left_join(x = df_percent,y = df_collapse) %>% 
                                    mutate(group = x)
 }) %>% list_rbind()
+
 
 ### Relabel variables
 table_categorical = table_categorical %>% 
@@ -100,24 +100,29 @@ table_categorical = table_categorical %>%
                                             group == 'oficio' ~ 'Oficio',
                                             .default = group))
 
+
 ### Rename variables
 table_categorical = table_categorical %>% 
-                    rename(' ' = var,
-                            'N' = n,
-                            '%' = prop,
-                            'Promedio' = average,
-                            'Desviación \nestándar' = sd,
-                            'Mediana' = median)
+                    select(' ' = var,
+                           'N' = n,
+                           '%' = prop,
+                           'Promedio' = average,
+                           'SD'  = sd,
+                            group)
 
 ### Make descriptive table
 table_categorical = table_categorical %>% 
                     gt(groupname_col = 'group',
                        row_group_as_column = F,
                        auto_align = T,
-                       process_md = T)  
+                       process_md = T)  %>%
+                     tab_style(style = list(cell_text(weight = "bold")),
+                               locations = cells_row_groups()) 
 
 ##==: 3. Export tables
 
+print(table_continuous)
+print(table_categorical)
 table_continuous %>% as_latex() %>% write_lines(x = .,file = '06_visual/output/01_tabla_continuas.tex')
 table_categorical %>% as_latex() %>% write_lines(x = .,file = '06_visual/output/01_tabla_categoricas.tex')
 
