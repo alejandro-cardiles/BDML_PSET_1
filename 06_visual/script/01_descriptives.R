@@ -32,22 +32,27 @@ table_continuous = df %>%
                             return(estimate)                        
                             }
 
-P25 = function(x) quantile(x,probs = 0.25)
+P10 = function(x) quantile(x,probs = 0.1)
 
-P75 = function(x) quantile(x,probs = 0.75)
+P90 = function(x) quantile(x,probs = 0.9)
+
+P_90_10 = function(x) {round(P90(x = x)/P10(x = x),2)}
+
+Skewness = function(x) skewness(x)
 
 ### Compute stats for table
-table_continuous = datasummary(formula = All(table_continuous) ~ Mean + SD + Min + P25 + Median + P75 + Max +  Correlation,
+table_continuous = datasummary(formula = All(table_continuous) ~ Mean + SD + P10 + Median + P90 + P_90_10 + Skewness+  Correlation,
                                data = table_continuous,
                                output = 'data.frame',fmt = function(x) format(round(x,2),big.mark = ',')) %>%
-                               arrange(desc(Mean))
-
+                               arrange(desc(Mean)) %>% 
+                               mutate(P_90_10 = ifelse(P_90_10 == 7.29,P_90_10,' '))
 ### Rename stats
 table_continuous = table_continuous %>% 
                    rename('Promedio' = "Mean",
                           'SD' = "SD",
                           'Mediana' = "Median",
-                          'Correlación' = 'Correlation')
+                          'Correlación' = 'Correlation',
+                          'Razón P90/P10' = P_90_10)
 
 ### Make table
 table_continuous = table_continuous %>% 
@@ -56,7 +61,7 @@ table_continuous = table_continuous %>%
                       auto_align = T,
                       process_md = T)  %>%
                    tab_style(style = list(cell_text(weight = "bold")),
-                             locations = cells_row_groups())
+                             locations = cells_row_groups());table_continuous
   
 ### 2.2 Categorical variables
 
