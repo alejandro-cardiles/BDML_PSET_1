@@ -22,7 +22,7 @@ colnames(df)
 # ==== 2. model regression ====
 #------------------------------#
 
-model1 = lm(log(y_total_m_ha) ~ sex, data = df) 
+model1 = lm(log(y_total_m_ha) ~ factor(sex), data = df) 
 model_sum = summary(model1)
 model_sum
 
@@ -39,17 +39,15 @@ df = df %>% mutate(sex = as.numeric(sex),
 # ==== 3. FWL model regression ====
 #-----------------------------------#
 
-df <- df %>%  mutate(female = as.integer(sex %in% c("Femenino")))
 
 
-model2 = lm(log(y_total_m_ha) ~ female + age + I(age^2) + max_educ_level + oficio + relab + size_firm + formalidad, data = df) 
+model2 = lm(log(y_total_m_ha) ~ factor(sex) + max_educ_level + relab + oficio + formalidad + size_firm , data = df) 
 model2_sum = summary(model2)
 model2_sum
 
-export(model2, "04_regression/03_output/model2_reg_gap_female.rds")
 
 
-model3 = lm(log(y_total_m_ha) ~ female + age + I(age^2) + max_educ_level + oficio + relab + size_firm, data = df) 
+model3 = lm(log(y_total_m_ha) ~ factor(sex) + age + I(age^2)  + max_educ_level + relab + oficio + formalidad + size_firm + total_menores + total_seniors_inactivos, data = df) 
 model3_sum = summary(model3)
 model3_sum
 
@@ -71,7 +69,7 @@ export(model4, "04_regression/03_output/model4_reg_gap_female.rds")
 
 
 df <- df %>% mutate(FemaleResidF = lm(log(y_total_m_ha) ~ age + I(age^2) + max_educ_level + oficio + relab + size_firm, df)$residuals) #Residuals of weight~foreign 
-df <- df %>% mutate(CovResidF = lm(female ~ age + I(age^2) + max_educ_level + oficio + relab + size_firm, df)$residuals) #Residuals of mpg~foreign 
+df <- df %>% mutate(CovResidF = lm(sex ~ age + I(age^2) + max_educ_level + oficio + relab + size_firm, df)$residuals) #Residuals of mpg~foreign 
 
 model5 <-lm(FemaleResidF ~ CovResidF,df)
 model5_sum = summary(model5)
@@ -104,6 +102,26 @@ boot_fwl <- boot(df, statistic = fwl_fn, R = 1000)
 boot_fwl$t0             # point estimate
 sd(boot_fwl$t)          # bootstrap SE
 boot.ci(boot_fwl, type = "perc")
+
+
+#==== function peak age ====# 
+peak.fn = function(data, index) {
+  d = data[index, ] 
+  f = lm(log(y_total_m_ha) ~ sex + age + I(age^2) + max_educ_level + oficio + 
+           relab + size_firm + formalidad, data = df)
+  b = coef(f)
+  if (b["I(age^2)"] < 0) { 
+    return(-b["age"] / (2 * b["I(age^2)"]))
+  } else {
+    return(NA) 
+  }
+}
+
+set.seed(2003)
+boot_peak = boot(data = df, statistic = peak.fn, R = 1000)
+
+
+df %>% tabyl(sex)
 
 
 
