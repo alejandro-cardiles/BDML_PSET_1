@@ -8,7 +8,7 @@
 #---------------------#
 
 rm(list = ls())
-pacman::p_load(rio, rvest, tidyverse, janitor,data.table,caret,stargazer,boot)
+pacman::p_load(rio, rvest, tidyverse, janitor,data.table,caret,stargazer,boot,fixest)
 
 #---------------------#
 # ==== 1. import ====
@@ -22,106 +22,97 @@ colnames(df)
 # ==== 2. model regression ====
 #------------------------------#
 
-model1 = lm(log(y_total_m_ha) ~ factor(sex), data = df) 
+model1 = feols(log(y_total_m_ha) ~ factor(sex), data = df) 
 model_sum = summary(model1)
 model_sum
 
+
 export(model1, "04_regression/03_output/model1_reg_gap_female.rds")
 
-#modelsummary(model, output = "latex")
 
-str(df[, c("age", "sex", "max_educ_level", "formalidad")])
-
-df = df %>% mutate(sex = as.numeric(sex),
-                   max_educ_level = as.factor(max_educ_level))
 
 #----------------------------------#
-# ==== 3. FWL model regression ====
+# ==== 3. FWL model regression ==== 
 #-----------------------------------#
 
 
-
-model2 = lm(log(y_total_m_ha) ~ factor(sex) + max_educ_level + relab + oficio + formalidad + size_firm , data = df) 
-model2_sum = summary(model2)
-model2_sum
+model2 = lm(log(y_total_m_ha) ~ sex + age + I(age^2) + max_educ_level + relab + oficio + formalidad + size_firm , data = df) 
+summary(model2)
 
 
+export(model2, "04_regression/03_output/model2_reg_gap_female.rds")
 
-model3 = lm(log(y_total_m_ha) ~ factor(sex) + age + I(age^2)  + max_educ_level + relab + oficio + formalidad + size_firm + total_menores + total_seniors_inactivos, data = df) 
-model3_sum = summary(model3)
-model3_sum
+
+model3 = feols(log(y_total_m_ha) ~ sex + age + I(age^2)  + max_educ_level + relab + oficio + formalidad + size_firm + total_menores + total_seniors_inactivos, data = df) 
+summary(model3)
 
 export(model3, "04_regression/03_output/model3_reg_gap_female.rds")
 
 ## ===== 3.1 first model =====
 
-m_y <- lm(log(y_total_m_ha) ~ age + I(age^2) + max_educ_level + oficio + relab + size_firm, data = df)
-m_x <- lm(female ~ age + I(age^2) + max_educ_level + oficio + relab + size_firm, data = df)
+m_y <- lm(log(y_total_m_ha) ~ age + I(age^2) + max_educ_level + relab + oficio + formalidad + size_firm, data = df)
+m_x <- lm(sex ~  age + I(age^2) + max_educ_level + relab + oficio + formalidad + size_firm , data = df)
 
 df$YResid      <- resid(m_y)
 df$FemaleResid <- resid(m_x)
 
-model4 <- lm(YResid ~ FemaleResid, data = df)
-
+model4 <- feols(YResid ~ FemaleResid, data = df)
+summary(model4)
 export(model4, "04_regression/03_output/model4_reg_gap_female.rds")
+
 
 ## ==== 3.2 second model ====
 
 
-df <- df %>% mutate(FemaleResidF = lm(log(y_total_m_ha) ~ age + I(age^2) + max_educ_level + oficio + relab + size_firm, df)$residuals) #Residuals of weight~foreign 
-df <- df %>% mutate(CovResidF = lm(sex ~ age + I(age^2) + max_educ_level + oficio + relab + size_firm, df)$residuals) #Residuals of mpg~foreign 
+m_y <- lm(log(y_total_m_ha) ~ age + I(age^2)  + max_educ_level + relab + oficio + formalidad + size_firm + total_menores + total_seniors_inactivos, data = df)
+m_x <- lm(sex ~   age + I(age^2)  + max_educ_level + relab + oficio + formalidad + size_firm + total_menores + total_seniors_inactivos, data = df)
 
-model5 <-lm(FemaleResidF ~ CovResidF,df)
-model5_sum = summary(model5)
-model5_sum
+df$YResid      <- resid(m_y)
+df$FemaleResid <- resid(m_x)
+
+model5 <- feols(YResid ~ 0 + FemaleResid, data=df)
+summary(model5)
 export(model5, "04_regression/03_output/model5_reg_gap_female.rds")
+
 
 #=======================================#
 # ==== 4. FWL: regresión de residuos ====
 #=======================================#
 
-# Define bootstrap function
+# Dummy
+df$female <- as.integer(df$sex %in% c("Femenino"))
 
-d <- df[indices, ]
+# new df
+
+df_boot <- data.frame(
+  y_total_m_ha = df$y_total_m_ha,
+  female = df$female,
+  age = df$age,
+  max_educ_level = df$max_educ_level,
+  relab = df$relab,
+  oficio = df$oficio,
+  formalidad = df$formalidad,
+  size_firm = df$size_firm,
+  total_menores = df$total_menores,
+  total_seniors_inactivos = df$total_seniors_inactivos
+)
 
 fwl_fn <- function(data, indices) {
-  d <- data[indices, ]
-  y_res <- lm(log(y_total_m_ha) ~  age + I(age^2) + max_educ_level + oficio + 
-                relab + size_firm + formalidad, data = d)$residuals
-  x_res <- lm(female ~  age + I(age^2) + max_educ_level + oficio + relab + 
-                size_firm + formalidad, data = d)$residuals
-  return(coef(lm(y_res ~ x_res))[2])  # Coefficient of female_resid
+  d <- data[indices, , drop = FALSE]  
+  
+  y_res <- resid(lm(log(y_total_m_ha) ~ age + I(age^2) + max_educ_level + relab +
+                      oficio + formalidad + size_firm + total_menores +
+                      total_seniors_inactivos, data = d))
+  
+  x_res <- resid(lm(female ~ age + I(age^2) + max_educ_level + relab +
+                      oficio + formalidad + size_firm + total_menores +
+                      total_seniors_inactivos, data = d))
+  
+  unname(coef(lm(y_res ~ x_res))[2])  
 }
 
-
-# Run bootstrap (e.g. 1000 reps)
 set.seed(324)
-boot_fwl <- boot(df, statistic = fwl_fn, R = 1000)
-
-# Estimate & SE
-boot_fwl$t0             # point estimate
-sd(boot_fwl$t)          # bootstrap SE
-boot.ci(boot_fwl, type = "perc")
-
-
-#==== function peak age ====# 
-peak.fn = function(data, index) {
-  d = data[index, ] 
-  f = lm(log(y_total_m_ha) ~ sex + age + I(age^2) + max_educ_level + oficio + 
-           relab + size_firm + formalidad, data = df)
-  b = coef(f)
-  if (b["I(age^2)"] < 0) { 
-    return(-b["age"] / (2 * b["I(age^2)"]))
-  } else {
-    return(NA) 
-  }
-}
-
-set.seed(2003)
-boot_peak = boot(data = df, statistic = peak.fn, R = 1000)
-
-
-df %>% tabyl(sex)
-
-
-
+boot_fwl <- boot(df_boot, statistic = fwl_fn, R = 1000)
+boot_fwl$t0           # estimación puntual
+sd(boot_fwl$t)        # EE bootstrap
+quantile(boot_fwl$t, c(.025,.975))  # IC 95%
