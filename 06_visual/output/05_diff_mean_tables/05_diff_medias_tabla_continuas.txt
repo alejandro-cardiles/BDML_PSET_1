@@ -1,0 +1,18 @@
+\begin{table}[!h]
+\centering
+\begin{tabular}{lccccc}
+\toprule
+\multicolumn{1}{c}{ } & \multicolumn{3}{c}{Media} & \multicolumn{2}{c}{Diferencias} \\
+\cmidrule(l{3pt}r{3pt}){2-4} \cmidrule(l{3pt}r{3pt}){5-6}
+ & Referencia & Superior & Inferior & Sup. - Ref. & Inf. - Ref.\\
+\midrule
+Edad & 38.55 & 42.16 & 45.92 & 3.61*** & 7.36***\\
+ & (13.13) & (13.00) & (14.84) & (1.09) & (1.52)\\
+Ingresos por hora & 8.59 & 10.50 & 6.80 & 1.91*** & -1.80***\\
+ & (0.68) & (0.74) & (1.09) & (0.06) & (0.11)\\
+\bottomrule
+\multicolumn{6}{l}{\rule{0pt}{1em}Desviaciones estándar entre paréntesis.}\\
+\multicolumn{6}{l}{\rule{0pt}{1em}* p$<$0.10; ** p$<$0.05; *** p$<$0.01}\\
+\multicolumn{6}{l}{\rule{0pt}{1em}Observaciones (Referencia, Superior, Inferior): 4147, 146, 97}\\
+\end{tabular}
+\end{table}
