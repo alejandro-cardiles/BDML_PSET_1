@@ -80,6 +80,10 @@ plot_data = data.frame(age, wage = exp(predict(model, newdata = age)))
 plot_data$ci_lower =ci_wage_age[1, ]
 plot_data$ci_upper =ci_wage_age[2, ]
 
+ggplot(plot_data)+
+  geom_point(aes(x = age,y = wage))+
+  geom_line(aes(x = age,y = ci_upper))+
+  geom_line(aes(x = age,y = ci_lower))
 
 #==== export  ====# 
 export(plot_data, "04_regression/03_output/plot_data_reg_wage_age.xlsx")
