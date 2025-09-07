@@ -6,13 +6,13 @@
 \cmidrule(l{3pt}r{3pt}){2-4} \cmidrule(l{3pt}r{3pt}){5-6}
  & Referencia & Superior & Inferior & Sup. - Ref. & Inf. - Ref.\\
 \midrule
-Edad & 38.55 & 42.16 & 45.92 & 3.61*** & 7.36***\\
- & (13.13) & (13.00) & (14.84) & (1.09) & (1.52)\\
-Ingresos por hora & 8.59 & 10.50 & 6.80 & 1.91*** & -1.80***\\
- & (0.68) & (0.74) & (1.09) & (0.06) & (0.11)\\
+Edad & 38.53 & 42.32 & 46.30 & 3.79*** & 7.77***\\
+ & (13.11) & (13.07) & (14.74) & (1.12) & (1.47)\\
+Ingresos por hora & 8.60 & 10.52 & 6.83 & 1.93*** & -1.76***\\
+ & (0.68) & (0.73) & (1.08) & (0.06) & (0.11)\\
 \bottomrule
 \multicolumn{6}{l}{\rule{0pt}{1em}Desviaciones estándar entre paréntesis.}\\
 \multicolumn{6}{l}{\rule{0pt}{1em}* p$<$0.10; ** p$<$0.05; *** p$<$0.01}\\
-\multicolumn{6}{l}{\rule{0pt}{1em}Observaciones (Referencia, Superior, Inferior): 4147, 146, 97}\\
+\multicolumn{6}{l}{\rule{0pt}{1em}Observaciones (Referencia, Superior, Inferior): 4145, 142, 103}\\
 \end{tabular}
 \end{table}

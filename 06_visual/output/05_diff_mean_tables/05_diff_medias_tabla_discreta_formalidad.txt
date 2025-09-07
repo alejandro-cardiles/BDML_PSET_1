@@ -6,13 +6,13 @@
 \cmidrule(l{3pt}r{3pt}){2-4} \cmidrule(l{3pt}r{3pt}){5-6}
  & Referencia & Superior & Inferior & Sup. - Ref. & Inf. - Ref.\\
 \midrule
-Formal & 0.61 & 0.60 & 0.37 & -0.01 & -0.24***\\
+Formal & 0.61 & 0.61 & 0.37 & -0.00 & -0.24***\\
  & (0.01) & (0.04) & (0.05) & (0.04) & (0.04)\\
-Informal & 0.39 & 0.40 & 0.63 & 0.01 & 0.24***\\
+Informal & 0.39 & 0.39 & 0.63 & 0.00 & 0.24***\\
  & (0.01) & (0.04) & (0.05) & (0.04) & (0.04)\\
 \bottomrule
 \multicolumn{6}{l}{\rule{0pt}{1em}Desviaciones estándar entre paréntesis.}\\
 \multicolumn{6}{l}{\rule{0pt}{1em}* p$<$0.10; ** p$<$0.05; *** p$<$0.01}\\
-\multicolumn{6}{l}{\rule{0pt}{1em}Observaciones (Referencia, Superior, Inferior): 4147, 146, 97}\\
+\multicolumn{6}{l}{\rule{0pt}{1em}Observaciones (Referencia, Superior, Inferior): 4145, 142, 103}\\
 \end{tabular}
 \end{table}

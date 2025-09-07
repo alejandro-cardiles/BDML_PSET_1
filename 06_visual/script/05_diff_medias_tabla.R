@@ -13,7 +13,7 @@ options(scipen =  99999)
 
 ##==: 1. Import data
 data = import("02_prepare_data/03_output/01_main_data.rds")
-resultados_modelos = import("05_prediction/03_output/01_test_metrics.rds")
+resultados_modelos = import("05_prediction/03_output/02_test_metrics_without_high_leverage.rds")
 
 ##==: 2. test vs train set     
 
@@ -28,17 +28,17 @@ test = testing(split)
 # agregar columna de outliers a el conjunto de test
 test = test |> 
         mutate(predicted = resultados_modelos[[9]]$resul$prediction,
-               mse = resultados_modelos[[9]]$resul$mse)
+               error = resultados_modelos[[9]]$resul$error)
 
 # calcular cuartiles
-q1 = quantile(test$mse, 0.25)
-q3 = quantile(test$mse, 0.75)
+q1 = quantile(test$error, 0.25, na.rm = TRUE)
+q3 = quantile(test$error, 0.75, na.rm = TRUE)
 iqr = q3 - q1
 
 # definir outliers
 test = test |> 
-        mutate(outliers = case_when(mse > (q3 + 1.5*iqr) ~ "over", 
-                                    mse < (q1 - 1.5*iqr) ~ "under", 
+        mutate(outliers = case_when(error > (q3 + 1.5*iqr) ~ "over", 
+                                    error < (q1 - 1.5*iqr) ~ "under", 
                                     TRUE ~ "No"))
 test$outliers = factor(test$outliers, levels = c("No", "over", "under"))
 
@@ -232,3 +232,45 @@ continuas_table <- x |>
 
         writeLines(text = continuas_table, con = paste0("06_visual/output/05_diff_mean_tables/05_diff_medias_tabla_discreta_",unique(x$category),".txt"))
 })
+
+
+# importantes
+discretas = bind_rows(discretas)
+
+names(discretas) = c("category", "var", "base_mean", "over_mean", "under_mean", "diff_1", "diff_2")
+importante = bind_rows(continuas,  discretas)
+
+ind = c(unique(which(str_detect(importante$diff_1,"\\*")), which(str_detect(importante$diff_2,"\\*"))), unique(which(str_detect(importante$diff_1,"\\*")), which(str_detect(importante$diff_2,"\\*")))+1) 
+ind = ind[order(ind)]
+importante = importante[ind,] |> select(-category)
+
+importante_table <- importante |>
+  kable(
+    col.names = c(
+      "",
+      "Referencia",
+      "Superior",
+      "Inferior",
+      "Sup. - Ref.",
+      "Inf. - Ref."
+    ),
+    format = "latex",
+    align = c("lccccc"),
+    booktabs = TRUE
+  ) |>
+  add_header_above(c(" " = 1, "Media" = 3, "Diferencias" = 2)) |>
+  kable_styling(latex_options = "hold_position") |>
+  footnote(
+    general = c(
+      "Desviaciones estándar entre paréntesis.",
+      "* p$<$0.10; ** p$<$0.05; *** p$<$0.01",
+      paste0("Observaciones (Referencia, Superior, Inferior): ",
+             sum(test$outliers == "No"), ", ",
+             sum(test$outliers == "over"), ", ",
+             sum(test$outliers == "under"))
+    ),
+    general_title = "", 
+    escape = FALSE
+  )
+
+writeLines(text = continuas_table, con = "06_visual/output/05_diff_mean_tables/05_diff_medias_main.txt")
