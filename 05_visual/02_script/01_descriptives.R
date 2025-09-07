@@ -116,7 +116,10 @@ table_categorical = table_categorical %>%
                                  row_group.border.top.width = px(0),
                                  row_group.border.bottom.width = px(0),
                                  row_group.border.top.style = 'none',
-                                 footnotes.multiline = FALSE)
+                                 footnotes.multiline = FALSE, 
+                                 table_body.hlines.style   = "none",   # quita líneas horizontales en body
+                                 row_group.border.top.style = "none",  # ya lo usabas
+                                 row_group.border.bottom.style = "none")
 
 ##==: 3. Add table title and footnote
 
@@ -141,6 +144,7 @@ table_continuous = table_continuous %>%
 #                                            La columna Asimetría muestra el coeficiente de asimetría de la distribución,
 #                                            Finalmente la columna Correlación muestra el valor de el Coeficiente de Correlación de Pearson con la variable de Ingresos laborales por hora.
 #                                            El tamaño de la muestra es de 14,632 observaciones.')
+
 
 ##==: 4. Export tables
 table_continuous %>% as_latex() %>% write_lines(x = .,file = '05_visual/03_output/01_tabla_continuas.tex')

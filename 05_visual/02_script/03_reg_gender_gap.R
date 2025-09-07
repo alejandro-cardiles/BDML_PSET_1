@@ -26,7 +26,13 @@ etable(model1, model4, model5,
                 "(Intercept)" = "Constante",
                 "factor(sex)Femenino" = "Mujer",
                 "FemaleResid" = "Residuales Mujer",
-                "YResid"      = "Residuales de salario"),  
+                "YResid"      = "Residuales de salario", 
+               "r2"        = "R²",
+               "ar2"       = "R² ajustado",
+               "rmse"      = "Error cuadrático medio (RMSE)",
+               "n"         = "Número de observaciones",
+               "FE"        = "Efectos fijos",
+               "Std. Errors" = "Errores estándar"),  
        extralines = list("Controles laborales" = c("No", "Sí", "Sí"),
                          "Controles de cuidado" = c("No", "No", "Sí") ),
        depvar = TRUE,
@@ -34,12 +40,30 @@ etable(model1, model4, model5,
        title = "Resultados de la estimación", 
        fitstat = ~  n + r2 + ar2 + rmse,   # nombres correctos en fixest
        notes = c(
-         "Errores estándar robustos en paréntesis. *** p<0.01, ** p<0.05, * p<0.1.",
          "Controles laborales: edad, edad$^2$, nivel educativo, relación laboral, oficio y tamaño de la firma.",
          "Controles de cuidado: número de menores en el hogar y número de mayores inactivos.",
          "La columna (1) es el modelo base; (2) añade controles laborales; (3) añade controles de cuidado."
        ),                 
        file = "05_visual/03_output/03_model_gender_gap.tex", replace = TRUE)
+
+
+tabla = readLines("05_visual/03_output/03_model_gender_gap.tex")
+tabla <- str_replace_all(
+  string      = tabla,
+  pattern     = "Signif\\. Codes:.*",  # regex que captura la nota en inglés
+  replacement = "Códigos de significancia: *** p$<$0.01, ** p$<$0.05, * p$<$0.10}}\\\\\\\\"
+)
+tabla <- str_replace_all(
+  string      = tabla,
+  pattern     = "IID standard-errors.+",  # regex que captura la nota en inglés
+  replacement = "Errores estándar IID entre paréntesis}}\\\\\\\\"
+)
+tabla <- str_replace_all(
+  string      = tabla,
+  pattern     = "Dependent Variable",  # regex que captura la nota en inglés
+  replacement = "Vairable dependiente"
+)
+writeLines(tabla, "05_visual/03_output/03_model_gender_gap.tex")
 
 
 

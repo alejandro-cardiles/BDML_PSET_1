@@ -4,31 +4,30 @@
    \centering
    \begin{tabular}{lccc}
       \tabularnewline \midrule \midrule
-      Dependent Variables: & ln(salario por hora) & \multicolumn{2}{c}{Residuales de salario}\\
-      Model:               & (1)            & (2)                     & (3)\\  
+      Vairable dependientes: & ln(salario por hora) & \multicolumn{2}{c}{Residuales de salario}\\
+      Model:                        & (1)            & (2)                     & (3)\\  
       \midrule
       \emph{Variables}\\
-      Constante            & 8.67$^{***}$   & $-2.26\times 10^{-17}$  &   \\   
-                           & (0.009)        & (0.005)                 &   \\   
-      Mujer                & -0.091$^{***}$ &                         &   \\   
-                           & (0.014)        &                         &   \\   
-      Residuales Mujer     &                & -0.147$^{***}$          & -0.146$^{***}$\\   
-                           &                & (0.011)                 & (0.011)\\   
-      Controles laborales  & No             & Sí                      & Sí\\  
-      Controles de cuidado & No             & No                      & Sí\\  
+      Constante                     & 8.67$^{***}$   & $-2.26\times 10^{-17}$  &   \\   
+                                    & (0.009)        & (0.005)                 &   \\   
+      Mujer                         & -0.091$^{***}$ &                         &   \\   
+                                    & (0.014)        &                         &   \\   
+      Residuales Mujer              &                & -0.147$^{***}$          & -0.146$^{***}$\\   
+                                    &                & (0.011)                 & (0.011)\\   
+      Controles laborales           & No             & Sí                      & Sí\\  
+      Controles de cuidado          & No             & No                      & Sí\\  
       \midrule
       \emph{Fit statistics}\\
-      Observations         & 14,632         & 14,632                  & 14,632\\  
-      R$^2$                & 0.00297        & 0.01103                 & 0.01087\\  
-      Adjusted R$^2$       & 0.00291        & 0.01096                 & 0.01087\\  
-      RMSE                 & 0.83125        & 0.63257                 & 0.63183\\  
+      Número de observaciones       & 14,632         & 14,632                  & 14,632\\  
+      R²                            & 0.00297        & 0.01103                 & 0.01087\\  
+      R² ajustado                   & 0.00291        & 0.01096                 & 0.01087\\  
+      Error cuadrático medio (RMSE) & 0.83125        & 0.63257                 & 0.63183\\  
       \midrule \midrule
-      \multicolumn{4}{l}{\emph{IID standard-errors in parentheses}}\\
-      \multicolumn{4}{l}{\emph{Signif. Codes: ***: 0.01, **: 0.05, *: 0.1}}\\
+      \multicolumn{4}{l}{\emph{Errores estándar IID entre paréntesis}}\\
+      \multicolumn{4}{l}{\emph{Códigos de significancia: *** p$<$0.01, ** p$<$0.05, * p$<$0.10}}\\
    \end{tabular}
    
    \par \raggedright 
-   Errores estándar robustos en paréntesis. *** p<0.01, ** p<0.05, * p<0.1.\\
    Controles laborales: edad, edad$^2$, nivel educativo, relación laboral, oficio y tamaño de la firma.\\
    Controles de cuidado: número de menores en el hogar y número de mayores inactivos.\\
    La columna (1) es el modelo base; (2) añade controles laborales; (3) añade controles de cuidado.

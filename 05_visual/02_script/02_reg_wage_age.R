@@ -18,22 +18,56 @@ peak_point = import("03_regression/03_output/01_peak_point_reg_wage_age.xlsx")
 
 #==== visual point  ====#
 
-#table
+# Diccionario global
+fixest::setFixest_dict(
+  se_type = "Errores estándar entre paréntesis",
+  signif  = "Códigos de significancia: *** p<0.01, ** p<0.05, * p<0.1",
+  r2      = "R²",
+  ar2     = "R² ajustado",
+  rmse    = "Error cuadrático medio (RMSE)",
+  n       = "Número de observaciones"
+)
+
+
 etable(model,
-       dict = c("(Intercept)" = "Constante",
-                "age"         = "Edad",
-                "I(age^2)"    = "Edad^2",
-                "log(y_total_m_ha)"   = "log(Ingreso laboral por hora)"),  
+       dict = c(
+         "(Intercept)"       = "Constante",
+         "age"               = "Edad",
+         "I(age^2)"          = "Edad^2",
+         "log(y_total_m_ha)" = "Log(Ingreso laboral por hora)"
+       ),
        depvar = TRUE,
        digits = 3,
-       title = "Resultados de la estimación",
-       view = T,tex = T,
-       fitstat = ~ r2 + ar2 + rmse, file = "05_visual/03_output/02_model_wage_age.tex", replace = T)
+       title  = "Resultados de la estimación",
+       tex    = TRUE, view = TRUE,
+       fitstat = ~ r2 + ar2 + rmse,
+       file = "05_visual/03_output/02_model_wage_age.tex",
+       replace = TRUE)
+setFixest_dict(reset = TRUE)
+
+# cambiar cosas de la tabla
+tabla = readLines("05_visual/03_output/02_model_wage_age.tex")
+tabla <- str_replace_all(
+  string      = tabla,
+  pattern     = "Signif\\. Codes:.*",  # regex que captura la nota en inglés
+  replacement = "Códigos de significancia: *** p$<$0.01, ** p$<$0.05, * p$<$0.10}}\\\\\\\\"
+)
+tabla <- str_replace_all(
+  string      = tabla,
+  pattern     = "IID standard-errors.+",  # regex que captura la nota en inglés
+  replacement = "Errores estándar IID entre paréntesis}}\\\\\\\\"
+)
+tabla <- str_replace_all(
+  string      = tabla,
+  pattern     = "Dependent Variable",  # regex que captura la nota en inglés
+  replacement = "Vairable dependiente"
+)
+writeLines(tabla, "05_visual/03_output/02_model_wage_age.tex")
 
 # plot
 plot <- ggplot(plot_data, aes(x = age, y = wage)) +
         scale_y_continuous(limits = c(1000, 6400), breaks = seq(1000,6400, by = 1000), labels = scales::label_number(big.mark = ".", decimal.mark = ",")) +
-        scale_x_continuous(limits = c(18, 92), breaks = seq(10,92, by = 10)) + 
+      D  scale_x_continuous(limits = c(18, 92), breaks = seq(10,92, by = 10)) + 
         geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper), 
                     fill = "darkgray", alpha = 0.3) +
         geom_line(aes(y = ci_lower, color = "Límite inferior"), linetype = "dashed") +
