@@ -38,7 +38,6 @@ data = map(.x = links, .f = function(x){
            str_extract_all(pattern = "pages/geih_page.+\\.html") %>% 
            unlist() %>% 
            paste0(url, .)
-    print(link)
     
     # importar datos
     data = read_html(link) %>% 

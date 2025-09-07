@@ -116,6 +116,10 @@ db = db %>%
 db = db %>% 
      filter(!relab %in% c("Trabajador familiar sin remuneración","Trabajador sin remuneración en empresas o negocios de otros hogares"))
 
+db = db |> 
+     mutate(relab = factor(x = relab, levels = unique(db$relab)), 
+            max_educ_level = factor(x = max_educ_level, levels = unique(db$max_educ_level)))
+
 ##==: 8. Keep only people who have a job and are older than 18 years
 db = db %>% 
      filter(ocupado == 1 & age > 18) %>% 
