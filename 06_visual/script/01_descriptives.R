@@ -1,3 +1,9 @@
+#------------------------#
+# Angel Castillo Negrete #
+#    2025 - 09 - 07      #
+#------------------------#
+
+
 ### setup
 cat("\f")
 rm(list = ls())
@@ -16,46 +22,25 @@ table_continuous = df %>%
                    select(where(is.numeric)) %>% 
                    rename('Ingresos laborales por hora' = y_total_m_ha,
                           'Edad' = age,
-                          'N. menores de edad' = total_menores,
-                          'N. personas mayores inactivas' = total_seniors_inactivos)
+                          'N. menores de edad en el hogar' = total_menores,
+                          'N. adultos mayores inactivos en el hogar' = total_seniors_inactivos)
 
 ### Define descriptive statistics
- Correlation = function(x){
-                            correlation_test_result = cor.test(df$y_total_m_ha,x, method = "pearson")
-                            
-                            estimate = correlation_test_result$estimate %>% round(.,3)
-                            p_value = correlation_test_result$p.value
-
-                            estimate = fcase(p_value <= 0.01, paste0(estimate, '***'),
-                                             p_value <= 0.05, paste0(estimate, '**'),
-                                             p_value <= 0.1,  paste0(estimate, '*'),
-                                             default = as.character(estimate))
-                            
-                            return(estimate)                        
-                            }
-
 P10 = function(x) quantile(x,probs = 0.1)
 
 P90 = function(x) quantile(x,probs = 0.9)
 
-P_90_10 = function(x) {round(P90(x = x)/P10(x = x),2)}
-
-Skewness = function(x) skewness(x)
-
 ### Compute stats for table
-table_continuous = datasummary(formula = All(table_continuous) ~ Mean + SD + P10 + Median + P90 + P_90_10 + Skewness + Correlation,
+table_continuous = datasummary(formula = All(table_continuous) ~ Mean + SD + Min + P10 + Median + P90 + Max,
                                data = table_continuous,
-                               output = 'data.frame',fmt = function(x) format(round(x,2),big.mark = ',')) %>%
-                               arrange(desc(Mean)) %>% 
-                               mutate(P_90_10 = ifelse(P_90_10 == 7.29,P_90_10,' '))
+                               output = 'data.frame',fmt = function(x) format(round(x,2),big.mark = '.',dec.mark = ',')) %>%
+                               arrange(desc(Mean)) 
+
 ### Rename stats
 table_continuous = table_continuous %>% 
                    rename('Promedio' = "Mean",
                           'SD' = "SD",
-                          'Mediana' = "Median",
-                          'Correlación' = 'Correlation',
-                          'Razón P90/P10' = P_90_10,
-                          'Asimetría' = 'Skewness')
+                          'Mediana' = "Median")
 
 ### Make table
 table_continuous = table_continuous %>% 
@@ -128,6 +113,8 @@ table_categorical = table_categorical %>%
                      tab_style(style = list(cell_text(weight = "bold")),
                                locations = cells_row_groups()) |>
                      tab_options(latex.use_longtable = TRUE,
+                                 row_group.border.top.width = px(0),
+                                 row_group.border.bottom.width = px(0),
                                  row_group.border.top.style = 'none',
                                  footnotes.multiline = FALSE)
 
@@ -180,7 +167,7 @@ latex_table_continuous = append(latex_table_continuous,
                                    Las columnas de Promedio y SD muestran la desviación estándar de las variables.Mientras que las columnas P10, Mediana y P90 muestran los valores de la distribución en los percentiles 10, 50 y 90.
                                    La columna Razón P90/P10 muestra el cociente entre los percentiles 90 y 10.
                                    La columna Asimetría muestra el coeficiente de asimetría de la distribución.
-                                   Finalmente la columna Correlación muestra el valor de el Coeficiente de Correlación de Pearson con la variable de Ingresos laborales por hora.
+                                   Finalmente la columna Correlación muestra el valor de el Coeficiente de correlación de Pearson con la variable de Ingresos laborales por hora.
                                    El tamaño de la muestra es de 14,632 observaciones.
                                    \\end{tablenotes}
                                    \\end{minipage}'))
