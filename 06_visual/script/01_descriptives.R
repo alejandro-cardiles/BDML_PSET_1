@@ -3,7 +3,7 @@ cat("\f")
 rm(list = ls())
 library(pacman)
 p_load(tidyverse,rio,janitor,data.table,moments, ### Data wrangling
-       modelsummary,ggpubr,gt,gtsummary,GGally,skimr) ### Data visualisation
+       modelsummary,ggpubr,gt,gtsummary,GGally,skimr,kableExtra,knitr) ### Data visualisation
 
 ##==: 1. Load data
 df = import('02_prepare_data/03_output/01_main_data.rds',setclass = 'tibble') %>% 
@@ -15,7 +15,9 @@ df = import('02_prepare_data/03_output/01_main_data.rds',setclass = 'tibble') %>
 table_continuous = df %>% 
                    select(where(is.numeric)) %>% 
                    rename('Ingresos laborales por hora' = y_total_m_ha,
-                          'Edad' = age)
+                          'Edad' = age,
+                          'N. menores de edad' = total_menores,
+                          'N. personas mayores inactivas' = total_seniors_inactivos)
 
 ### Define descriptive statistics
  Correlation = function(x){
@@ -41,7 +43,7 @@ P_90_10 = function(x) {round(P90(x = x)/P10(x = x),2)}
 Skewness = function(x) skewness(x)
 
 ### Compute stats for table
-table_continuous = datasummary(formula = All(table_continuous) ~ Mean + SD + P10 + Median + P90 + P_90_10 + Skewness+  Correlation,
+table_continuous = datasummary(formula = All(table_continuous) ~ Mean + SD + P10 + Median + P90 + P_90_10 + Skewness + Correlation,
                                data = table_continuous,
                                output = 'data.frame',fmt = function(x) format(round(x,2),big.mark = ',')) %>%
                                arrange(desc(Mean)) %>% 
@@ -52,7 +54,8 @@ table_continuous = table_continuous %>%
                           'SD' = "SD",
                           'Mediana' = "Median",
                           'Correlación' = 'Correlation',
-                          'Razón P90/P10' = P_90_10)
+                          'Razón P90/P10' = P_90_10,
+                          'Asimetría' = 'Skewness')
 
 ### Make table
 table_continuous = table_continuous %>% 
@@ -61,8 +64,9 @@ table_continuous = table_continuous %>%
                       auto_align = T,
                       process_md = T)  %>%
                    tab_style(style = list(cell_text(weight = "bold")),
-                             locations = cells_row_groups());table_continuous
-  
+                             locations = cells_row_groups()) %>% 
+                   tab_options(latex.use_longtable = TRUE)
+
 ### 2.2 Categorical variables
 
 ### Get vectors of variables to iterate over
@@ -122,12 +126,33 @@ table_categorical = table_categorical %>%
                        auto_align = T,
                        process_md = T)  %>%
                      tab_style(style = list(cell_text(weight = "bold")),
-                               locations = cells_row_groups()) 
+                               locations = cells_row_groups()) |>
+                     tab_options(latex.use_longtable = TRUE)
 
 ##==: 3. Export tables
-
-print(table_continuous)
-print(table_categorical)
 table_continuous %>% as_latex() %>% write_lines(x = .,file = '06_visual/output/01_tabla_continuas.tex')
 table_categorical %>% as_latex() %>% write_lines(x = .,file = '06_visual/output/01_tabla_categoricas.tex')
+
+##==: 4. Reimport tables
+latex_table_continuous = read_lines('06_visual/output/01_tabla_continuas.tex')
+latex_table_categoricas = read_lines('06_visual/output/01_tabla_categoricas.tex')
+
+### Subset tables
+latex_table_continuous = latex_table_continuous[3:13]
+latex_table_categoricas = latex_table_categoricas[3:59]
+
+### Append tables
+latex_table_continuous = append("\\centering \\footnotesize \\setlength{\\tabcolsep}{4pt} \\renewcommand{\\arraystretch}{0.8}",
+                                "\\begingroup",
+                                "\\fontsize{9.0pt}{8.5pt}\\selectfont"
+                                latex_table_continuous)
+
+latex_table_continuous = append("\\centering \\footnotesize \\setlength{\\tabcolsep}{4pt} \\renewcommand{\\arraystretch}{0.8}",
+                                "\\begingroup",
+                                "\\fontsize{9.0pt}{8.5pt}\\selectfont"
+                                latex_table_categoricas)
+
+##==: 5. Reexport tables
+latex_table_continuous %>% write_lines(x = .,file = '06_visual/output/01_tabla_continuas.tex')
+latex_table_categoricas %>% write_lines(x = .,file = '06_visual/output/01_tabla_categoricas.tex')
 
