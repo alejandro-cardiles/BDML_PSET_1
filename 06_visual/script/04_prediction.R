@@ -82,7 +82,8 @@ tabla = tabla |>
         kable_styling(latex_options = "hold_position", full_width = F) |> 
         footnote(
                 general = c(
-                paste0("Train Obs. (Outliers-No outliers): ", resultados_modelos[[9]]$train_size, "-", resultados_modelos_sin_outlieres[[9]]$train_size)
+                paste0("Train Obs. (Outliers-No outliers): ", resultados_modelos[[9]]$train_size, "-", resultados_modelos_sin_outlieres[[9]]$train_size), 
+                "Dos observaciones fueron eliminadas en LOOCV para evitar leverage de 1 en el test set"
                 ),
                 general_title = "", 
                 escape = FALSE
