@@ -195,6 +195,9 @@ continuas_table <- continuas |>
   )
 
 writeLines(text = continuas_table, con = "05_visual/03_output/05_diff_mean_tables/05_diff_medias_tabla_continuas.txt")
+importante_table = readLines("05_visual/03_output/05_diff_mean_tables/05_diff_medias_tabla_continuas.txt")
+importante_table = importante_table[-c(1,length(importante_table))]
+writeLines(text = importante_table, con = "05_visual/03_output/05_diff_mean_tables/05_diff_medias_tabla_continuas.txt")
 
 # discretas
 
@@ -231,6 +234,10 @@ continuas_table <- x |>
         )
 
         writeLines(text = continuas_table, con = paste0("05_visual/03_output/05_diff_mean_tables/05_diff_medias_tabla_discreta_",unique(x$category),".txt"))
+        importante_table = readLines(paste0("05_visual/03_output/05_diff_mean_tables/05_diff_medias_tabla_discreta_",unique(x$category),".txt"))
+        importante_table = importante_table[-c(1,length(importante_table))]
+        writeLines(text = importante_table, con = paste0("05_visual/03_output/05_diff_mean_tables/05_diff_medias_tabla_discreta_",unique(x$category),".txt"))
+
 })
 
 
@@ -259,7 +266,7 @@ importante_table <- importante |>
     booktabs = TRUE
   ) |>
   add_header_above(c(" " = 1, "Media" = 3, "Diferencias" = 2)) |>
-  kable_styling(latex_options = "hold_position") |>
+  kable_styling(latex_options = "hold_position", full_width = FALSE) |>
   footnote(
     general = c(
       "Desviaciones estándar entre paréntesis.",
@@ -272,5 +279,7 @@ importante_table <- importante |>
     general_title = "", 
     escape = FALSE
   )
-
-writeLines(text = continuas_table, con = "05_visual/03_output/05_diff_mean_tables/05_diff_medias_main.txt")
+writeLines(text = importante_table, con = "05_visual/03_output/05_diff_mean_tables/05_diff_medias_main.txt")
+importante_table = readLines("05_visual/03_output/05_diff_mean_tables/05_diff_medias_main.txt")
+importante_table = importante_table[-c(1,length(importante_table))]
+writeLines(text = importante_table, con = "05_visual/03_output/05_diff_mean_tables/05_diff_medias_main.txt")

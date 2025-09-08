@@ -1,4 +1,3 @@
-\begin{table}[!h]
 \centering
 \begin{tabular}{lccccc}
 \toprule
@@ -25,4 +24,3 @@ Otro & 0.00 & 0.00 & 0.00 & -0.00 & -0.00\\
 \multicolumn{6}{l}{\rule{0pt}{1em}* p$<$0.10; ** p$<$0.05; *** p$<$0.01}\\
 \multicolumn{6}{l}{\rule{0pt}{1em}Observaciones (Referencia, Superior, Inferior): 4147, 141, 102}\\
 \end{tabular}
-\end{table}

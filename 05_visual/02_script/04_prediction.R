@@ -67,10 +67,10 @@ tabla = left_join(tabla, tabla_sin_outliers, by =c(".metric") )
 
 # pasar a latex
 tabla = tabla |> 
-        mutate(.estimate.x = formatC(.estimate.x, format = "f", digits = 2),
-               loocv.x = formatC(loocv.x, format = "f", digits = 2),
-               .estimate.y = formatC(.estimate.y, format = "f", digits = 2), 
-               loocv.y = formatC(loocv.y, format = "f", digits = 2)) 
+        mutate(.estimate.x = formatC(.estimate.x, format = "f", digits = 3),
+               loocv.x = formatC(loocv.x, format = "f", digits = 3),
+               .estimate.y = formatC(.estimate.y, format = "f", digits = 3), 
+               loocv.y = formatC(loocv.y, format = "f", digits = 3)) 
 
 tabla = tabla |> 
         select(.metric, loocv.x, loocv.y, .estimate.x, .estimate.y )   |>     
@@ -91,3 +91,6 @@ tabla = tabla |>
 
 ##==: 4. grafico de residuos
 writeLines(text = tabla,con = "05_visual/03_output/04_prediction_table.tex")
+tabla = readLines("05_visual/03_output/04_prediction_table.tex")
+tabla = tabla[-c(1,length(tabla))]
+writeLines(text = tabla, con = "05_visual/03_output/04_prediction_table.tex")

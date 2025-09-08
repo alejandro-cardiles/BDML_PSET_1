@@ -24,7 +24,10 @@ list = c(# 01_importar
          "05_visual/02_script/02_reg_wage_age.R",
          "05_visual/02_script/03_reg_gender_gap.R",
          "05_visual/02_script/04_prediction.R",
-         "05_visual/02_script/05_diff_medias_tabla.R")
+         "05_visual/02_script/05_diff_medias_tabla.R", 
+         "05_visual/02_script/05_diff_medias_tabla.R", 
+         "05_visual/02_script/06_plot_hist_residuales.R", 
+        )
 
 run = walk(.x = list, .f = function(x){
   print(paste0("Running: ", x))
