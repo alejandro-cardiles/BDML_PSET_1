@@ -2,6 +2,8 @@
 
 Este repositorio contiene el flujo completo de trabajo para la resolución del *Problem Set 1 del curso Big Data and Machine Learning (2025-2)*. Las carpetas están organizadas en módulos que cubren cada etapa del proceso, desde la importación de datos hasta la documentación de resultados.
 
+Porfavor corra el código presente en el script de main.R para replicar los resultados.
+
 <!---------------------------->
 
 ## Descripción de carpetas:
@@ -20,6 +22,7 @@ Este repositorio contiene el flujo completo de trabajo para la resolución del *
 -   01_input: contiene los insumos necesarios para cada tarea (bases de datos, archivos externos, metadatos, etc.).
 -   02_scripts: contiene los códigos utilizados en cada etapa del proceso (importación, preparación, análisis, modelado, etc.).
 -   03_output: contiene los resultados generados a partir de la ejecución de los scripts (tablas procesadas, visualizaciones, modelos estimados, reportes, entre otros).
+
 
 <!---------------------------->
 
