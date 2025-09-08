@@ -2,7 +2,7 @@
 
 Este repositorio contiene el flujo completo de trabajo para la resolución del *Problem Set 1 del curso Big Data and Machine Learning (2025-2)*. Las carpetas están organizadas en módulos que cubren cada etapa del proceso, desde la importación de datos hasta la documentación de resultados.
 
-Porfavor corra el código presente en el script de main.R para replicar los resultados.
+Porfavor corra el código presente en el script de main.R para replicar los resultados. 
 
 <!---------------------------->
 
@@ -12,7 +12,7 @@ Porfavor corra el código presente en el script de main.R para replicar los resu
 -   02_prepare_data: limpieza, transformación y estructuración de las bases de datos.
 -   03_regression: estimación de modelos econométricos.
 -   04_prediction: construcción y evaluación de algoritmos predictivos.
--   05_documentos: reportes, diapositivas y materiales de soporte.
+-   05_visuals: graficas y visualizaciones
 -   99_other: actividades complementarias relacionadas con el análisis y la presentación de resultados.
 
 <!---------------------------->
@@ -44,7 +44,7 @@ Porfavor corra el código presente en el script de main.R para replicar los resu
 
 └── 📂 03_output
 
-📂 03_stats
+📂 03_regression
 
 ├── 📂 01_input
 
@@ -52,7 +52,7 @@ Porfavor corra el código presente en el script de main.R para replicar los resu
 
 └── 📂 03_output
 
-📂 04_regressions
+📂 04_prediction
 
 ├── 📂 01_input
 
@@ -60,7 +60,7 @@ Porfavor corra el código presente en el script de main.R para replicar los resu
 
 └── 📂 03_output
 
-📂 05_visual
+📂 05_visuals
 
 ├── 📂 01_input
 
