@@ -113,12 +113,9 @@ table_categorical = table_categorical %>%
                      tab_style(style = list(cell_text(weight = "bold")),
                                locations = cells_row_groups()) |>
                      tab_options(latex.use_longtable = TRUE,
-                                 row_group.border.top.width = px(0),
-                                 row_group.border.bottom.width = px(0),
-                                 row_group.border.top.style = 'none',
                                  footnotes.multiline = FALSE, 
-                                 table_body.hlines.style   = "none",   # quita líneas horizontales en body
-                                 row_group.border.top.style = "none",  # ya lo usabas
+                                 table_body.hlines.style   = "none",  
+                                 row_group.border.top.style = "none",
                                  row_group.border.bottom.style = "none")
 
 ##==: 3. Add table title and footnote
@@ -167,12 +164,10 @@ latex_table_continuous = append(c("\\centering \\footnotesize \\setlength{\\tabc
 latex_table_continuous = append(latex_table_continuous,
                                 c('\\begin{minipage}{0.8\\textwidth}
                                    \\begin{tablenotes}[scriptsize,flushleft]
-                                   \\item \\footnotesize \\textit{Nota:} Esta tabla muestra un conjunto de estadísticas descriptivas de las variables continuas incluidas en el conjunto de datos.
-                                   Las columnas de Promedio y SD muestran la desviación estándar de las variables.Mientras que las columnas P10, Mediana y P90 muestran los valores de la distribución en los percentiles 10, 50 y 90.
-                                   La columna Razón P90/P10 muestra el cociente entre los percentiles 90 y 10.
-                                   La columna Asimetría muestra el coeficiente de asimetría de la distribución.
-                                   Finalmente la columna Correlación muestra el valor de el Coeficiente de correlación de Pearson con la variable de Ingresos laborales por hora.
-                                   El tamaño de la muestra es de 14,632 observaciones.
+                                   \\item \\footnotesize \\textit{Nota:} Esta tabla muestra las estadísticas descriptivas de las variables continuas incluidas en el conjunto de datos.
+                                   Las columnas de Promedio y SD muestran la desviación estándar de las variables. Mientras que las columnas P10, Mediana y P90 muestran los valores de la distribución en los percentiles 10, 50 y 90.
+                                   Las columnas Min y Max muestran el minímo y el máximo valor muestral.
+                                   El tamaño de la muestra es de 14.632 observaciones.
                                    \\end{tablenotes}
                                    \\end{minipage}'))
 
@@ -185,10 +180,10 @@ latex_table_categoricas = append(latex_table_categoricas,
                                  c('\\begin{minipage}{0.8\\textwidth}
                                    \\begin{tablenotes}[scriptsize,flushleft]
                                    \\item \\footnotesize \\textit{Nota:} Esta tabla muestra la cantidad de observaciones en cada nivel de cada variable, 
-                                   así como la proprción que representan del total de distribución.
+                                   así como la proproción que representan del total de distribución.
                                    Las columnas de Promedio y SD, muestran respectivamente, el promedio y la distribución estándar
                                    de la variable dependiente para cada uno de los niveles de las covariables. 
-                                   El tamaño de la muestra es de 14,632 observaciones.
+                                   El tamaño de la muestra es de 14.632 observaciones.
                                    \\end{tablenotes}
                                    \\end{minipage}'))
 
